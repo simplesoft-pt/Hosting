@@ -18,7 +18,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateAssemblyTitleAttribute>true</GenerateAssemblyTitleAttribute>
         <GenerateAssemblyDescriptionAttribute>true</GenerateAssemblyDescriptionAttribute>
-        <TargetFrameworks>net4.5;netstandard1.0</TargetFrameworks>
+        <TargetFramework>netstandard1.1</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -39,7 +39,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SimpleSoft.Hosting.Abstractions\SimpleSoft.Hosting.Abstractions.csproj"/>
+        <ProjectReference Include="..\SimpleSoft.Hosting.Abstractions\SimpleSoft.Hosting.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
