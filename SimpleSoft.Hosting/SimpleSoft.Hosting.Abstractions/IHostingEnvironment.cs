@@ -33,24 +33,24 @@ namespace SimpleSoft.Hosting
     public interface IHostingEnvironment
     {
         /// <summary>
+        /// The environment name.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// The application name.
         /// </summary>
-        string ApplicationName { get; set; }
+        string ApplicationName { get; }
 
         /// <summary>
         /// The <see cref="IFileProvider"/> pointing at <see cref="ContentRootPath"/>.
         /// </summary>
-        IFileProvider ContentRootFileProvider { get; set; }
+        IFileProvider ContentRootFileProvider { get; }
 
         /// <summary>
         /// The absolute path to the directory that contains the
         /// application files.
         /// </summary>
-        string ContentRootPath { get; set; }
-
-        /// <summary>
-        /// The environment name.
-        /// </summary>
-        string Name { get; set; }
+        string ContentRootPath { get; }
     }
 }

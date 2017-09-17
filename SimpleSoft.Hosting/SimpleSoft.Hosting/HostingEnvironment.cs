@@ -22,6 +22,7 @@
 // SOFTWARE.
 #endregion
 
+using System;
 using Microsoft.Extensions.FileProviders;
 
 namespace SimpleSoft.Hosting
@@ -29,16 +30,45 @@ namespace SimpleSoft.Hosting
     /// <inheritdoc />
     public class HostingEnvironment : IHostingEnvironment
     {
-        /// <inheritdoc />
-        public string ApplicationName { get; set; }
+        private readonly PhysicalFileProvider _contentRootFileProvider;
+
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="name">The environment name, like 'Production'</param>
+        /// <param name="applicationName">The application name</param>
+        /// <param name="contentRootFileProvider">The content root file provider</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public HostingEnvironment(string name, string applicationName, PhysicalFileProvider contentRootFileProvider)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ApplicationName = applicationName ?? throw new ArgumentNullException(nameof(applicationName));
+            _contentRootFileProvider = contentRootFileProvider ?? throw new ArgumentNullException(nameof(contentRootFileProvider));
+        }
+
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="name">The environment name, like 'Production'</param>
+        /// <param name="applicationName">The application name</param>
+        /// <param name="contentRootPath">The root path to be used by the <see cref="PhysicalFileProvider"/></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public HostingEnvironment(string name, string applicationName, string contentRootPath)
+            : this(name, applicationName, new PhysicalFileProvider(contentRootPath))
+        {
+
+        }
 
         /// <inheritdoc />
-        public IFileProvider ContentRootFileProvider { get; set; }
+        public string Name { get; }
 
         /// <inheritdoc />
-        public string ContentRootPath { get; set; }
+        public string ApplicationName { get; }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public IFileProvider ContentRootFileProvider => _contentRootFileProvider;
+
+        /// <inheritdoc />
+        public string ContentRootPath => _contentRootFileProvider.Root;
     }
 }
