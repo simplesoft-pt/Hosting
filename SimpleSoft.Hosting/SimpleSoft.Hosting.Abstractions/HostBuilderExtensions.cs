@@ -40,12 +40,29 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder ConfigureConfigurationBuilder<TBuilder>(this TBuilder builder, Action<ConfigurationBuilderConfiguratorParam> handler)
+        public static TBuilder ConfigureConfigurationBuilder<TBuilder>(this TBuilder builder, Action<ConfigurationBuilderHandlerParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
             builder.AddConfigurationBuilderHandler(handler);
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ConfigurationHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureConfiguration<TBuilder>(this TBuilder builder, Action<ConfigurationHandlerParam> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.AddConfigurationHandler(handler);
             return builder;
         }
     }

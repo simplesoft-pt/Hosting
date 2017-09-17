@@ -43,13 +43,24 @@ namespace SimpleSoft.Hosting
         /// Collection of handlers that configure the <see cref="IConfigurationBuilder"/>
         /// that will be used to generate the <see cref="IConfigurationRoot"/>.
         /// </summary>
-        IReadOnlyCollection<Action<ConfigurationBuilderConfiguratorParam>> ConfigurationBuilderHandlers { get; }
+        IReadOnlyCollection<Action<ConfigurationBuilderHandlerParam>> ConfigurationBuilderHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="ConfigurationBuilderHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddConfigurationBuilderHandler(Action<ConfigurationBuilderConfiguratorParam> handler);
+        void AddConfigurationBuilderHandler(Action<ConfigurationBuilderHandlerParam> handler);
+
+        /// <summary>
+        /// Collection of handlers that configure the <see cref="IConfigurationRoot"/>.
+        /// </summary>
+        IReadOnlyCollection<Action<ConfigurationHandlerParam>> ConfigurationHandlers { get; }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="ConfigurationHandlers"/> collection.
+        /// </summary>
+        /// <param name="handler">The handler to add</param>
+        void AddConfigurationHandler(Action<ConfigurationHandlerParam> handler);
 
         /// <summary>
         /// Builds a host instance of the given type to be run.

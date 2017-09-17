@@ -35,7 +35,8 @@ namespace SimpleSoft.Hosting
     public class HostBuilder : IHostBuilder, IDisposable
     {
         private bool _disposed;
-        private readonly List<Action<ConfigurationBuilderConfiguratorParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderConfiguratorParam>>();
+        private readonly List<Action<ConfigurationBuilderHandlerParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderHandlerParam>>();
+        private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -83,6 +84,7 @@ namespace SimpleSoft.Hosting
 
 
             _configurationBuilderHandlers.Clear();
+            _configurationHandlers.Clear();
 
             _disposed = true;
         }
@@ -93,14 +95,25 @@ namespace SimpleSoft.Hosting
         public IHostingEnvironment Environment { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ConfigurationBuilderConfiguratorParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
+        public IReadOnlyCollection<Action<ConfigurationBuilderHandlerParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
 
         /// <inheritdoc />
-        public void AddConfigurationBuilderHandler(Action<ConfigurationBuilderConfiguratorParam> handler)
+        public void AddConfigurationBuilderHandler(Action<ConfigurationBuilderHandlerParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             _configurationBuilderHandlers.Add(handler);
+        }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<Action<ConfigurationHandlerParam>> ConfigurationHandlers => _configurationHandlers;
+
+        /// <inheritdoc />
+        public void AddConfigurationHandler(Action<ConfigurationHandlerParam> handler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            _configurationHandlers.Add(handler);
         }
 
         /// <inheritdoc />
@@ -111,6 +124,8 @@ namespace SimpleSoft.Hosting
 
             var configurationBuilder = BuildConfigurationBuilderUsingHandlers();
 
+            var configurationRoot = BuildConfigurationRootUsingHandlers(configurationBuilder.Build());
+
             return default(THost);
         }
 
@@ -118,7 +133,7 @@ namespace SimpleSoft.Hosting
 
         private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers()
         {
-            var param = new ConfigurationBuilderConfiguratorParam(new ConfigurationBuilder()
+            var param = new ConfigurationBuilderHandlerParam(new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     {"environmentName", Environment.Name},
@@ -128,6 +143,15 @@ namespace SimpleSoft.Hosting
                 handler(param);
 
             return param.Builder;
+        }
+
+        private IConfigurationRoot BuildConfigurationRootUsingHandlers(IConfigurationRoot configurationBuilder)
+        {
+            var param = new ConfigurationHandlerParam(configurationBuilder, Environment);
+            foreach (var handler in _configurationHandlers)
+                handler(param);
+
+            return param.Configuration;
         }
 
         #endregion

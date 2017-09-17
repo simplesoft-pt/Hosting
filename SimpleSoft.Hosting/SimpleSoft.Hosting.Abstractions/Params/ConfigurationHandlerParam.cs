@@ -28,27 +28,26 @@ using Microsoft.Extensions.Configuration;
 namespace SimpleSoft.Hosting.Params
 {
     /// <summary>
-    /// The parameter for handlers that configure the <see cref="IConfigurationBuilder"/>
-    /// that will be used to generate the <see cref="IConfigurationRoot"/>.
+    /// The parameter for handlers that configure the <see cref="IConfigurationRoot"/>.
     /// </summary>
-    public sealed class ConfigurationBuilderConfiguratorParam
+    public sealed class ConfigurationHandlerParam
     {
         /// <summary>
         /// Creates a new instance.
         /// </summary>
-        /// <param name="builder">The configuration builder</param>
+        /// <param name="configuration">The configuration root</param>
         /// <param name="environment">The hosting environment</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ConfigurationBuilderConfiguratorParam(IConfigurationBuilder builder, IHostingEnvironment environment)
+        public ConfigurationHandlerParam(IConfigurationRoot configuration, IHostingEnvironment environment)
         {
-            Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
         /// <summary>
-        /// The configuration builder.
+        /// The configuration root.
         /// </summary>
-        public IConfigurationBuilder Builder { get; }
+        public IConfigurationRoot Configuration { get; }
 
         /// <summary>
         /// The hosting environment.
