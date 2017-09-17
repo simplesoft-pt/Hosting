@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
 namespace SimpleSoft.Hosting
@@ -63,6 +64,40 @@ namespace SimpleSoft.Hosting
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
             builder.AddConfigurationHandler(handler);
+            return builder;
+        }
+
+        /// <summary>
+        /// Uses the given <see cref="ILoggerFactory"/> instance.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="loggerFactory">The logger factory to use</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder UseLoggerFactory<TBuilder>(this TBuilder builder, ILoggerFactory loggerFactory)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.LoggerFactory = loggerFactory;
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.LoggerFactoryHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureLoggerFactory<TBuilder>(this TBuilder builder, Action<LoggerFactoryHandlerParam> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.AddLoggerFactoryHandler(handler);
             return builder;
         }
     }

@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
 namespace SimpleSoft.Hosting
@@ -35,8 +36,10 @@ namespace SimpleSoft.Hosting
     public class HostBuilder : IHostBuilder, IDisposable
     {
         private bool _disposed;
+        private ILoggerFactory _loggerFactory;
         private readonly List<Action<ConfigurationBuilderHandlerParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderHandlerParam>>();
         private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
+        private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -46,6 +49,7 @@ namespace SimpleSoft.Hosting
         public HostBuilder(IHostingEnvironment environment)
         {
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            LoggerFactory = new LoggerFactory();
         }
 
         /// <summary>
@@ -82,10 +86,14 @@ namespace SimpleSoft.Hosting
         {
             if(_disposed) return;
 
+            if(disposing)
+                _loggerFactory?.Dispose();
 
             _configurationBuilderHandlers.Clear();
             _configurationHandlers.Clear();
+            _loggerFactoryHandlers.Clear();
 
+            _loggerFactory = null;
             _disposed = true;
         }
 
@@ -94,6 +102,8 @@ namespace SimpleSoft.Hosting
         /// <inheritdoc />
         public IHostingEnvironment Environment { get; }
 
+        #region IConfigurationBuilder
+        
         /// <inheritdoc />
         public IReadOnlyCollection<Action<ConfigurationBuilderHandlerParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
 
@@ -104,6 +114,10 @@ namespace SimpleSoft.Hosting
 
             _configurationBuilderHandlers.Add(handler);
         }
+
+        #endregion
+
+        #region IConfigurationRoot
 
         /// <inheritdoc />
         public IReadOnlyCollection<Action<ConfigurationHandlerParam>> ConfigurationHandlers => _configurationHandlers;
@@ -116,6 +130,30 @@ namespace SimpleSoft.Hosting
             _configurationHandlers.Add(handler);
         }
 
+        #endregion
+
+        #region ILoggerFactory
+
+        /// <inheritdoc />
+        public ILoggerFactory LoggerFactory
+        {
+            get => _loggerFactory;
+            set => _loggerFactory = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<Action<LoggerFactoryHandlerParam>> LoggerFactoryHandlers => _loggerFactoryHandlers;
+
+        /// <inheritdoc />
+        public void AddLoggerFactoryHandler(Action<LoggerFactoryHandlerParam> handler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            _loggerFactoryHandlers.Add(handler);
+        }
+
+        #endregion
+
         /// <inheritdoc />
         public THost Build<THost>() where THost : IHost
         {
@@ -125,6 +163,8 @@ namespace SimpleSoft.Hosting
             var configurationBuilder = BuildConfigurationBuilderUsingHandlers();
 
             var configurationRoot = BuildConfigurationRootUsingHandlers(configurationBuilder.Build());
+
+            var loggerFactory = BuildLoggerFactoryUsingHandlers(configurationRoot);
 
             return default(THost);
         }
@@ -152,6 +192,15 @@ namespace SimpleSoft.Hosting
                 handler(param);
 
             return param.Configuration;
+        }
+
+        private ILoggerFactory BuildLoggerFactoryUsingHandlers(IConfiguration configuration)
+        {
+            var param = new LoggerFactoryHandlerParam(LoggerFactory, configuration, Environment);
+            foreach (var handler in _loggerFactoryHandlers)
+                handler(param);
+
+            return param.LoggerFactory;
         }
 
         #endregion

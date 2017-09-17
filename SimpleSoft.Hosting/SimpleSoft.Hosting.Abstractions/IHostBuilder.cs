@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
 namespace SimpleSoft.Hosting
@@ -39,6 +40,8 @@ namespace SimpleSoft.Hosting
         /// </summary>
         IHostingEnvironment Environment { get; }
 
+        #region IConfigurationBuilder
+
         /// <summary>
         /// Collection of handlers that configure the <see cref="IConfigurationBuilder"/>
         /// that will be used to generate the <see cref="IConfigurationRoot"/>.
@@ -51,6 +54,10 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         void AddConfigurationBuilderHandler(Action<ConfigurationBuilderHandlerParam> handler);
 
+        #endregion
+
+        #region IConfigurationRoot
+
         /// <summary>
         /// Collection of handlers that configure the <see cref="IConfigurationRoot"/>.
         /// </summary>
@@ -61,6 +68,28 @@ namespace SimpleSoft.Hosting
         /// </summary>
         /// <param name="handler">The handler to add</param>
         void AddConfigurationHandler(Action<ConfigurationHandlerParam> handler);
+
+        #endregion
+
+        #region ILoggerFactory
+
+        /// <summary>
+        /// The builder logger factory.
+        /// </summary>
+        ILoggerFactory LoggerFactory { get; set; }
+
+        /// <summary>
+        /// Collection of handlers that configure the <see cref="ILoggerFactory"/>.
+        /// </summary>
+        IReadOnlyCollection<Action<LoggerFactoryHandlerParam>> LoggerFactoryHandlers { get; }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="LoggerFactoryHandlers"/> collection.
+        /// </summary>
+        /// <param name="handler">The handler to add</param>
+        void AddLoggerFactoryHandler(Action<LoggerFactoryHandlerParam> handler);
+
+        #endregion
 
         /// <summary>
         /// Builds a host instance of the given type to be run.
