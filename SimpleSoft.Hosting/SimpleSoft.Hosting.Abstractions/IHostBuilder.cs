@@ -50,5 +50,12 @@ namespace SimpleSoft.Hosting
         /// </summary>
         /// <param name="handler">The handler to add</param>
         void AddConfigurationBuilderHandler(Action<ConfigurationBuilderConfiguratorParam> handler);
+
+        /// <summary>
+        /// Builds a host instance of the given type to be run.
+        /// </summary>
+        /// <typeparam name="THost">The host type</typeparam>
+        /// <returns>The host instance</returns>
+        THost Build<THost>() where THost : IHost;
     }
 }

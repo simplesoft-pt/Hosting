@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using SimpleSoft.Hosting.Params;
 
 namespace SimpleSoft.Hosting
@@ -101,5 +102,34 @@ namespace SimpleSoft.Hosting
 
             _configurationBuilderHandlers.Add(handler);
         }
+
+        /// <inheritdoc />
+        public THost Build<THost>() where THost : IHost
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(HostBuilder));
+
+            var configurationBuilder = BuildConfigurationBuilderUsingHandlers();
+
+            return default(THost);
+        }
+
+        #region Private
+
+        private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers()
+        {
+            var param = new ConfigurationBuilderConfiguratorParam(new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    {"environmentName", Environment.Name},
+                    {"contentRootPath", Environment.ContentRootPath}
+                }), Environment);
+            foreach (var handler in _configurationBuilderHandlers)
+                handler(param);
+
+            return param.Builder;
+        }
+
+        #endregion
     }
 }
