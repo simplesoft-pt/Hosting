@@ -29,7 +29,7 @@ using SimpleSoft.Hosting.Params;
 namespace SimpleSoft.Hosting
 {
     /// <summary>
-    /// The migration host builder,
+    /// Builder for <see cref="IHost"/> instances.
     /// </summary>
     public class HostBuilder : IHostBuilder, IDisposable
     {
