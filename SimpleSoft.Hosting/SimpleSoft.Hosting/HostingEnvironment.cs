@@ -23,6 +23,8 @@
 #endregion
 
 using System;
+using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 
 namespace SimpleSoft.Hosting
@@ -38,12 +40,11 @@ namespace SimpleSoft.Hosting
         /// <param name="name">The environment name, like 'Production'</param>
         /// <param name="applicationName">The application name</param>
         /// <param name="contentRootFileProvider">The content root file provider</param>
-        /// <exception cref="ArgumentNullException"></exception>
         public HostingEnvironment(string name, string applicationName, PhysicalFileProvider contentRootFileProvider)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            ApplicationName = applicationName ?? throw new ArgumentNullException(nameof(applicationName));
-            _contentRootFileProvider = contentRootFileProvider ?? throw new ArgumentNullException(nameof(contentRootFileProvider));
+            Name = name;
+            ApplicationName = applicationName;
+            _contentRootFileProvider = contentRootFileProvider;
         }
 
         /// <summary>
@@ -52,7 +53,6 @@ namespace SimpleSoft.Hosting
         /// <param name="name">The environment name, like 'Production'</param>
         /// <param name="applicationName">The application name</param>
         /// <param name="contentRootPath">The root path to be used by the <see cref="PhysicalFileProvider"/></param>
-        /// <exception cref="ArgumentNullException"></exception>
         public HostingEnvironment(string name, string applicationName, string contentRootPath)
             : this(name, applicationName, new PhysicalFileProvider(contentRootPath))
         {
@@ -70,5 +70,43 @@ namespace SimpleSoft.Hosting
 
         /// <inheritdoc />
         public string ContentRootPath => _contentRootFileProvider.Root;
+
+        /// <summary>
+        /// Builds a hosting environment with default values.
+        /// 
+        /// The environment name will be searched from the environment variables using the provided 
+        /// key and if not found, the value 'Production' will be assigned.
+        /// 
+        /// The application name will be extracted from the entry assembly.
+        /// 
+        /// The current directory will be used for the file provider.
+        /// </summary>
+        /// <param name="environmentNameKey">The environment key to be searched</param>
+        /// <returns>Hosting environment instance</returns>
+        /// <see cref="ArgumentNullException"/>
+        /// <see cref="ArgumentException"/>
+        public static HostingEnvironment BuildDefault(string environmentNameKey = "environment")
+        {
+            if (environmentNameKey == null)
+                throw new ArgumentNullException(nameof(environmentNameKey));
+            if (string.IsNullOrWhiteSpace(environmentNameKey))
+                throw new ArgumentException("Value cannot be whitespace.", nameof(environmentNameKey));
+
+            var environment = Environment.GetEnvironmentVariable(environmentNameKey);
+            if (string.IsNullOrWhiteSpace(environment))
+                environment = "Production";
+
+#if NETSTANDARD1_3
+
+            return new HostingEnvironment(
+                environment, null, Directory.GetCurrentDirectory());
+
+#else
+            return new HostingEnvironment(
+                environment, Assembly.GetEntryAssembly().GetName().Name, Directory.GetCurrentDirectory());
+
+#endif
+
+        }
     }
 }
