@@ -18,7 +18,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateAssemblyTitleAttribute>true</GenerateAssemblyTitleAttribute>
         <GenerateAssemblyDescriptionAttribute>true</GenerateAssemblyDescriptionAttribute>
-        <TargetFrameworks>net4.5.1;netstandard1.3</TargetFrameworks>
+        <TargetFrameworks>net4.5.1;netstandard1.3;netstandard1.5</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -41,6 +41,7 @@
     <ItemGroup>
         <ProjectReference Include="..\SimpleSoft.Hosting.Abstractions\SimpleSoft.Hosting.Abstractions.csproj" />
         <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="1.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

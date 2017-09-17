@@ -23,32 +23,36 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
-using SimpleSoft.Hosting.Params;
 
-namespace SimpleSoft.Hosting
+namespace SimpleSoft.Hosting.Params
 {
     /// <summary>
-    /// The migration host builder
+    /// The parameter for handlers that configure the <see cref="IConfigurationBuilder"/>
+    /// that will be used to generate the <see cref="IConfigurationRoot"/>.
     /// </summary>
-    public interface IHostBuilder
+    public sealed class ConfigurationBuilderConfiguratorParam
     {
         /// <summary>
-        /// The builder hosting environment.
+        /// Creates a new instance.
         /// </summary>
-        IHostingEnvironment Environment { get; }
+        /// <param name="builder">The configuration builder</param>
+        /// <param name="environment">The hosting environment</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public ConfigurationBuilderConfiguratorParam(IConfigurationBuilder builder, IHostingEnvironment environment)
+        {
+            Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+        }
 
         /// <summary>
-        /// Collection of handlers that configure the <see cref="IConfigurationBuilder"/>
-        /// that will be used to generate the <see cref="IConfigurationRoot"/>.
+        /// The configuration builder.
         /// </summary>
-        IReadOnlyCollection<Action<ConfigurationBuilderConfiguratorParam>> ConfigurationBuilderHandlers { get; }
+        public IConfigurationBuilder Builder { get; }
 
         /// <summary>
-        /// Adds an handler to the <see cref="ConfigurationBuilderHandlers"/> collection.
+        /// The hosting environment.
         /// </summary>
-        /// <param name="handler">The handler to add</param>
-        void AddConfigurationBuilderHandler(Action<ConfigurationBuilderConfiguratorParam> handler);
+        public IHostingEnvironment Environment { get; }
     }
 }
