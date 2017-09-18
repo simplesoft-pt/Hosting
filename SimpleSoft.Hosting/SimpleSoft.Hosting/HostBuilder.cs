@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
@@ -40,6 +41,7 @@ namespace SimpleSoft.Hosting
         private readonly List<Action<ConfigurationBuilderHandlerParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderHandlerParam>>();
         private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
         private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
+        private readonly List<Action<ServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<ServiceCollectionHandlerParam>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -154,8 +156,23 @@ namespace SimpleSoft.Hosting
 
         #endregion
 
+        #region IServiceCollection
+
         /// <inheritdoc />
-        public THost Build<THost>() where THost : IHost
+        public IReadOnlyCollection<Action<ServiceCollectionHandlerParam>> ServiceCollectionHandlers => _serviceCollectionHandlers;
+
+        /// <inheritdoc />
+        public void AddServiceCollectionHandler(Action<ServiceCollectionHandlerParam> handler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            _serviceCollectionHandlers.Add(handler);
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        public THost Build<THost>() where THost : class, IHost
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(HostBuilder));
@@ -165,6 +182,12 @@ namespace SimpleSoft.Hosting
             var configurationRoot = BuildConfigurationRootUsingHandlers(configurationBuilder.Build());
 
             var loggerFactory = BuildLoggerFactoryUsingHandlers(configurationRoot);
+
+            var logger = loggerFactory.CreateLogger<HostBuilder>();
+
+            var serviceCollection =
+                BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot)
+                    .AddTransient<THost>();
 
             return default(THost);
         }
@@ -201,6 +224,35 @@ namespace SimpleSoft.Hosting
                 handler(param);
 
             return param.LoggerFactory;
+        }
+
+        private IServiceCollection BuildServiceCollectionUsingHandlers(ILogger logger, ILoggerFactory loggerFactory, IConfigurationRoot configuration)
+        {
+            logger.LogDebug("Configuring core services");
+
+            var serviceCollection = new ServiceCollection()
+                .AddSingleton(loggerFactory)
+                .AddLogging()
+                .AddSingleton(configuration)
+                .AddSingleton<IConfiguration>(configuration)
+                .AddSingleton(Environment);
+
+            if (_serviceCollectionHandlers.Count == 0)
+            {
+                logger.LogWarning(
+                    "Service configuration handlers collection is empty. Host will only have access to core services...");
+                return serviceCollection;
+            }
+
+            logger.LogDebug(
+                "Configuring the host services using a total of {total} handlers",
+                _serviceCollectionHandlers.Count);
+
+            var param = new ServiceCollectionHandlerParam(serviceCollection, loggerFactory, configuration, Environment);
+            foreach (var handler in _serviceCollectionHandlers)
+                handler(param);
+
+            return param.ServiceCollection;
         }
 
         #endregion

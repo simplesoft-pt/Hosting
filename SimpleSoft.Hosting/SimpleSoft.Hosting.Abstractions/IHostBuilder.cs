@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
@@ -91,11 +92,26 @@ namespace SimpleSoft.Hosting
 
         #endregion
 
+        #region IServiceCollection
+
+        /// <summary>
+        /// Collection of handlers that configure the <see cref="IServiceCollection"/>.
+        /// </summary>
+        IReadOnlyCollection<Action<ServiceCollectionHandlerParam>> ServiceCollectionHandlers { get; }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="ServiceCollectionHandlers"/> collection.
+        /// </summary>
+        /// <param name="handler">The handler to add</param>
+        void AddServiceCollectionHandler(Action<ServiceCollectionHandlerParam> handler);
+
+        #endregion
+
         /// <summary>
         /// Builds a host instance of the given type to be run.
         /// </summary>
         /// <typeparam name="THost">The host type</typeparam>
         /// <returns>The host instance</returns>
-        THost Build<THost>() where THost : IHost;
+        THost Build<THost>() where THost : class, IHost;
     }
 }

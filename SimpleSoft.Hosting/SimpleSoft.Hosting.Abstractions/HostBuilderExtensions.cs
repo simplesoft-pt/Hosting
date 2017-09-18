@@ -100,5 +100,22 @@ namespace SimpleSoft.Hosting
             builder.AddLoggerFactoryHandler(handler);
             return builder;
         }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ServiceCollectionHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureServiceCollection<TBuilder>(this TBuilder builder, Action<ServiceCollectionHandlerParam> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.AddServiceCollectionHandler(handler);
+            return builder;
+        }
     }
 }
