@@ -39,7 +39,7 @@ namespace SimpleSoft.Hosting
     {
         private bool _disposed;
         private ILoggerFactory _loggerFactory;
-        private readonly List<Action<ConfigurationBuilderHandlerParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderHandlerParam>>();
+        private readonly List<Action<ConfigurationBuilderParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderParam>>();
         private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
         private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
         private readonly List<Action<ServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<ServiceCollectionHandlerParam>>();
@@ -108,10 +108,10 @@ namespace SimpleSoft.Hosting
         #region IConfigurationBuilder
         
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ConfigurationBuilderHandlerParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
+        public IReadOnlyCollection<Action<ConfigurationBuilderParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
 
         /// <inheritdoc />
-        public void AddConfigurationBuilderHandler(Action<ConfigurationBuilderHandlerParam> handler)
+        public void AddConfigurationBuilderHandler(Action<ConfigurationBuilderParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
@@ -196,7 +196,7 @@ namespace SimpleSoft.Hosting
 
         private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers()
         {
-            var param = new ConfigurationBuilderHandlerParam(new ConfigurationBuilder()
+            var param = new ConfigurationBuilderParam(new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     {"environmentName", Environment.Name},
