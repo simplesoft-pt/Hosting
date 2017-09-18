@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
@@ -185,9 +186,8 @@ namespace SimpleSoft.Hosting
 
             var logger = loggerFactory.CreateLogger<HostBuilder>();
 
-            var serviceCollection =
-                BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot)
-                    .AddTransient<THost>();
+            var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
+            serviceCollection.TryAddTransient<THost>();
 
             return default(THost);
         }
