@@ -117,5 +117,22 @@ namespace SimpleSoft.Hosting
             builder.AddServiceCollectionHandler(handler);
             return builder;
         }
+
+        /// <summary>
+        /// Uses the given function as the <see cref="IServiceProvider"/> builder.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="providerBuilder">The provider builder to use</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder UseServiceProviderBuilder<TBuilder>(this TBuilder builder, Func<ServiceProviderBuilderParam, IServiceProvider> providerBuilder)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.ServiceProviderBuilder = providerBuilder;
+            return builder;
+        }
     }
 }

@@ -43,6 +43,7 @@ namespace SimpleSoft.Hosting
         private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
         private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
         private readonly List<Action<ServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<ServiceCollectionHandlerParam>>();
+        private Func<ServiceProviderBuilderParam, IServiceProvider> _serviceProviderBuilder = p=> p.ServiceCollection.BuildServiceProvider();
 
         /// <summary>
         /// Creates a new instance.
@@ -173,6 +174,13 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <inheritdoc />
+        public Func<ServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder
+        {
+            get => _serviceProviderBuilder;
+            set => _serviceProviderBuilder = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <inheritdoc />
         public THost Build<THost>() where THost : class, IHost
         {
             if (_disposed)
@@ -189,7 +197,9 @@ namespace SimpleSoft.Hosting
             var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
             serviceCollection.TryAddTransient<THost>();
 
-            return default(THost);
+            var serviceProvider = BuildServiceProvider(logger, serviceCollection, loggerFactory, configurationRoot);
+
+            return serviceProvider.GetRequiredService<THost>();
         }
 
         #region Private
@@ -253,6 +263,14 @@ namespace SimpleSoft.Hosting
                 handler(param);
 
             return param.ServiceCollection;
+        }
+
+        private IServiceProvider BuildServiceProvider(ILogger logger, IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration)
+        {
+            logger.LogDebug("Configuring service provider");
+
+            var param = new ServiceProviderBuilderParam(serviceCollection, loggerFactory, configuration, Environment);
+            return ServiceProviderBuilder(param);
         }
 
         #endregion

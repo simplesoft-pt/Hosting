@@ -108,6 +108,11 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <summary>
+        /// Builds the <see cref="IServiceProvider"/>.
+        /// </summary>
+        Func<ServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder { get; set; }
+
+        /// <summary>
         /// Builds a host instance of the given type to be run.
         /// </summary>
         /// <typeparam name="THost">The host type</typeparam>
