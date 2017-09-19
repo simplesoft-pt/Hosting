@@ -97,8 +97,12 @@ namespace SimpleSoft.Hosting
             _configurationBuilderHandlers.Clear();
             _configurationHandlers.Clear();
             _loggerFactoryHandlers.Clear();
+            _serviceCollectionHandlers.Clear();
+            _configureHandlers.Clear();
 
             _loggerFactory = null;
+            _serviceProviderBuilder = null;
+
             _disposed = true;
         }
 
