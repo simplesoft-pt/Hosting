@@ -203,13 +203,16 @@ namespace SimpleSoft.Hosting
             if (_disposed)
                 throw new ObjectDisposedException(nameof(HostBuilder));
 
-            var configurationBuilder = BuildConfigurationBuilderUsingHandlers();
+            var logger = LoggerFactory.CreateLogger<HostBuilder>();
 
-            var configurationRoot = BuildConfigurationRootUsingHandlers(configurationBuilder.Build());
+            var configurationBuilder = BuildConfigurationBuilderUsingHandlers(logger);
 
-            var loggerFactory = BuildLoggerFactoryUsingHandlers(configurationRoot);
+            var configurationRoot = BuildConfigurationRootUsingHandlers(logger, configurationBuilder);
 
-            var logger = loggerFactory.CreateLogger<HostBuilder>();
+            var loggerFactory = BuildLoggerFactoryUsingHandlers(logger, configurationRoot);
+
+            //  getting a new logger since configurations may have changed
+            logger = loggerFactory.CreateLogger<HostBuilder>();
 
             var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
             serviceCollection.TryAddScoped<THost>();
@@ -221,31 +224,48 @@ namespace SimpleSoft.Hosting
 
         #region Private
 
-        private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers()
+        private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers(ILogger logger)
         {
-            var param = new ConfigurationBuilderParam(new ConfigurationBuilder()
+            logger.LogDebug("Preparing configuration builder");
+
+            var builder = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     {"environmentName", Environment.Name},
                     {"contentRootPath", Environment.ContentRootPath}
-                }), Environment);
+                });
+
+            logger.LogDebug("Running configuration builder handlers [Count: {configurationBuilderHandlersCount}]",
+                _configurationBuilderHandlers.Count);
+
+            var param = new ConfigurationBuilderParam(builder, Environment);
             foreach (var handler in _configurationBuilderHandlers)
                 handler(param);
 
             return param.Builder;
         }
 
-        private IConfigurationRoot BuildConfigurationRootUsingHandlers(IConfigurationRoot configurationBuilder)
+        private IConfigurationRoot BuildConfigurationRootUsingHandlers(ILogger logger, IConfigurationBuilder configurationBuilder)
         {
-            var param = new ConfigurationHandlerParam(configurationBuilder, Environment);
+            logger.LogDebug("Building configurations root");
+
+            var configurations = configurationBuilder.Build();
+
+            logger.LogDebug("Running configurations handlers [Count: {configurationHandlersCount}]",
+                _configurationHandlers.Count);
+
+            var param = new ConfigurationHandlerParam(configurations, Environment);
             foreach (var handler in _configurationHandlers)
                 handler(param);
 
             return param.Configuration;
         }
 
-        private ILoggerFactory BuildLoggerFactoryUsingHandlers(IConfiguration configuration)
+        private ILoggerFactory BuildLoggerFactoryUsingHandlers(ILogger logger, IConfiguration configuration)
         {
+            logger.LogDebug("Running logger factory handlers [Count: {configurationHandlersCount}]",
+                _configurationHandlers.Count);
+
             var param = new LoggerFactoryHandlerParam(LoggerFactory, configuration, Environment);
             foreach (var handler in _loggerFactoryHandlers)
                 handler(param);
@@ -264,15 +284,7 @@ namespace SimpleSoft.Hosting
                 .AddSingleton<IConfiguration>(configuration)
                 .AddSingleton(Environment);
 
-            if (_serviceCollectionHandlers.Count == 0)
-            {
-                logger.LogWarning(
-                    "Service configuration handlers collection is empty. Host will only have access to core services...");
-                return serviceCollection;
-            }
-
-            logger.LogDebug(
-                "Configuring the host services using a total of {total} handlers",
+            logger.LogDebug("Running service collection handlers [Count: {serviceCollectionHandlersCount}]",
                 _serviceCollectionHandlers.Count);
 
             var param = new ServiceCollectionHandlerParam(serviceCollection, loggerFactory, configuration, Environment);
@@ -289,14 +301,7 @@ namespace SimpleSoft.Hosting
             var builderParam = new ServiceProviderBuilderParam(serviceCollection, loggerFactory, configuration, Environment);
             var serviceProvider = ServiceProviderBuilder(builderParam);
 
-            if (_configureHandlers.Count == 0)
-            {
-                logger.LogDebug("Service provider handlers is empty");
-                return serviceProvider;
-            }
-
-            logger.LogDebug(
-                "Configuring the service provider using a total of {total} handlers",
+            logger.LogDebug("Running service provider handlers [Count: {configureHandlersCount}]",
                 _configureHandlers.Count);
 
             var param = new ConfigureHandlerParam(serviceProvider, loggerFactory, configuration, Environment);
