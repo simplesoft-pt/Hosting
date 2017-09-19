@@ -128,10 +128,10 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <summary>
-        /// Builds a host instance of the given type to be run.
+        /// Builds a run context for the given host type.
         /// </summary>
         /// <typeparam name="THost">The host type</typeparam>
-        /// <returns>The host instance</returns>
-        THost Build<THost>() where THost : class, IHost;
+        /// <returns>Run context for the host</returns>
+        HostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost;
     }
 }

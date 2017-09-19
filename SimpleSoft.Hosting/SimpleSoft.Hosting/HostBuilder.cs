@@ -198,7 +198,7 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <inheritdoc />
-        public THost Build<THost>() where THost : class, IHost
+        public HostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(HostBuilder));
@@ -212,11 +212,11 @@ namespace SimpleSoft.Hosting
             var logger = loggerFactory.CreateLogger<HostBuilder>();
 
             var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
-            serviceCollection.TryAddTransient<THost>();
+            serviceCollection.TryAddScoped<THost>();
 
             var serviceProvider = BuildAndConfigureServiceProvider(logger, serviceCollection, loggerFactory, configurationRoot);
 
-            return serviceProvider.GetRequiredService<THost>();
+            return new HostRunContext<THost>(serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope());
         }
 
         #region Private

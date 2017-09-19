@@ -23,6 +23,8 @@
 #endregion
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
@@ -150,6 +152,40 @@ namespace SimpleSoft.Hosting
 
             builder.AddConfigureHandler(handler);
             return builder;
+        }
+
+        /// <summary>
+        /// Builds and runs a host instance of the given type.
+        /// </summary>
+        /// <typeparam name="THost">The host type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="ct">The cancellation</param>
+        /// <returns>Task to be awaited</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task RunHostAsync<THost>(this IHostBuilder builder, CancellationToken ct = default (CancellationToken)) 
+            where THost : class, IHost
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            using (var ctx = builder.BuildRunContext<THost>())
+            {
+                await ctx.Host.RunAsync(ct).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Builds and runs a host instance of the given type.
+        /// </summary>
+        /// <typeparam name="THost">The host type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void RunHost<THost>(this IHostBuilder builder) 
+            where THost : class, IHost
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.RunHostAsync<THost>().ConfigureAwait(false)
+                .GetAwaiter().GetResult();
         }
     }
 }
