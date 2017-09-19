@@ -235,8 +235,8 @@ namespace SimpleSoft.Hosting
             var builder = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    {"environmentName", Environment.Name},
-                    {"contentRootPath", Environment.ContentRootPath}
+                    {"environment:name", Environment.Name},
+                    {"environment:contentRootPath", Environment.ContentRootPath}
                 });
 
             logger.LogDebug("Running configuration builder handlers [Count: {configurationBuilderHandlersCount}]",
