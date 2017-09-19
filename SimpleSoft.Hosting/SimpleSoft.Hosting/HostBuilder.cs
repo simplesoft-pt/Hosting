@@ -285,7 +285,6 @@ namespace SimpleSoft.Hosting
                 .AddSingleton(loggerFactory)
                 .AddLogging()
                 .AddSingleton(configuration)
-                .AddSingleton<IConfiguration>(configuration)
                 .AddSingleton(Environment);
 
             logger.LogDebug("Running service collection handlers [Count: {serviceCollectionHandlersCount}]",
