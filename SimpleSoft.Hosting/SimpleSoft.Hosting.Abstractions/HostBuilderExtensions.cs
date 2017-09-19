@@ -155,6 +155,45 @@ namespace SimpleSoft.Hosting
         }
 
         /// <summary>
+        /// Uses the given startup class to configure hosts.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="startup">The startup instance</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder UseStartup<TBuilder>(this TBuilder builder, IHostStartup startup)
+            where TBuilder : class, IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (startup == null) throw new ArgumentNullException(nameof(startup));
+
+            builder.AddConfigurationBuilderHandler(startup.ConfigureConfigurationBuilder);
+            builder.AddConfigurationHandler(startup.ConfigureConfiguration);
+            builder.AddLoggerFactoryHandler(startup.ConfigureLoggerFactory);
+            builder.AddServiceCollectionHandler(startup.ConfigureServiceCollection);
+            builder.ServiceProviderBuilder = startup.BuildServiceProvider;
+            builder.AddConfigureHandler(startup.Configure);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Uses the given startup class to configure hosts.
+        /// </summary>
+        /// <typeparam name="TStartup">The startup type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static IHostBuilder UseStartup<TStartup>(this IHostBuilder builder)
+            where TStartup : class, IHostStartup, new()
+        {
+            builder.UseStartup(new TStartup());
+
+            return builder;
+        }
+
+        /// <summary>
         /// Builds and runs a host instance of the given type.
         /// </summary>
         /// <typeparam name="THost">The host type</typeparam>
