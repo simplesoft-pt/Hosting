@@ -112,6 +112,21 @@ namespace SimpleSoft.Hosting
         /// </summary>
         Func<ServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder { get; set; }
 
+        #region IServiceProvider
+
+        /// <summary>
+        /// Collection of handlers that configure the <see cref="IServiceProvider"/>.
+        /// </summary>
+        IReadOnlyCollection<Action<ConfigureHandlerParam>> ConfigureHandlers { get; }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="ConfigureHandlers"/> collection.
+        /// </summary>
+        /// <param name="handler">The handler to add</param>
+        void AddConfigureHandler(Action<ConfigureHandlerParam> handler);
+
+        #endregion
+
         /// <summary>
         /// Builds a host instance of the given type to be run.
         /// </summary>

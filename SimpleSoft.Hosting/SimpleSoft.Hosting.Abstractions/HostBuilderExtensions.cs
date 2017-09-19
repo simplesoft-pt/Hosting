@@ -134,5 +134,22 @@ namespace SimpleSoft.Hosting
             builder.ServiceProviderBuilder = providerBuilder;
             return builder;
         }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ConfigureHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder Configure<TBuilder>(this TBuilder builder, Action<ConfigureHandlerParam> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.AddConfigureHandler(handler);
+            return builder;
+        }
     }
 }

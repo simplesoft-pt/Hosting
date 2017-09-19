@@ -43,7 +43,8 @@ namespace SimpleSoft.Hosting
         private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
         private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
         private readonly List<Action<ServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<ServiceCollectionHandlerParam>>();
-        private Func<ServiceProviderBuilderParam, IServiceProvider> _serviceProviderBuilder = p=> p.ServiceCollection.BuildServiceProvider();
+        private Func<ServiceProviderBuilderParam, IServiceProvider> _serviceProviderBuilder = p => p.ServiceCollection.BuildServiceProvider();
+        private readonly List<Action<ConfigureHandlerParam>> _configureHandlers = new List<Action<ConfigureHandlerParam>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -180,6 +181,22 @@ namespace SimpleSoft.Hosting
             set => _serviceProviderBuilder = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        #region IServiceProvider
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<Action<ConfigureHandlerParam>> ConfigureHandlers => _configureHandlers;
+
+        /// <inheritdoc />
+        /// <param name="handler">The handler to add</param>
+        public void AddConfigureHandler(Action<ConfigureHandlerParam> handler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            _configureHandlers.Add(handler);
+        }
+
+        #endregion
+
         /// <inheritdoc />
         public THost Build<THost>() where THost : class, IHost
         {
@@ -197,7 +214,7 @@ namespace SimpleSoft.Hosting
             var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
             serviceCollection.TryAddTransient<THost>();
 
-            var serviceProvider = BuildServiceProvider(logger, serviceCollection, loggerFactory, configurationRoot);
+            var serviceProvider = BuildAndConfigureServiceProvider(logger, serviceCollection, loggerFactory, configurationRoot);
 
             return serviceProvider.GetRequiredService<THost>();
         }
@@ -265,12 +282,28 @@ namespace SimpleSoft.Hosting
             return param.ServiceCollection;
         }
 
-        private IServiceProvider BuildServiceProvider(ILogger logger, IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration)
+        private IServiceProvider BuildAndConfigureServiceProvider(ILogger logger, IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
-            logger.LogDebug("Configuring service provider");
+            logger.LogDebug("Building service provider");
 
-            var param = new ServiceProviderBuilderParam(serviceCollection, loggerFactory, configuration, Environment);
-            return ServiceProviderBuilder(param);
+            var builderParam = new ServiceProviderBuilderParam(serviceCollection, loggerFactory, configuration, Environment);
+            var serviceProvider = ServiceProviderBuilder(builderParam);
+
+            if (_configureHandlers.Count == 0)
+            {
+                logger.LogDebug("Service provider handlers is empty");
+                return serviceProvider;
+            }
+
+            logger.LogDebug(
+                "Configuring the service provider using a total of {total} handlers",
+                _configureHandlers.Count);
+
+            var param = new ConfigureHandlerParam(serviceProvider, loggerFactory, configuration, Environment);
+            foreach (var handler in _configureHandlers)
+                handler(param);
+
+            return param.ServiceProvider;
         }
 
         #endregion
