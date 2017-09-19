@@ -1,48 +1,48 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <RootNamespace>SimpleSoft.Hosting</RootNamespace>
-        <AssemblyTitle>SimpleSoft.Hosting.Abstractions</AssemblyTitle>
-        <AssemblyName>SimpleSoft.Hosting.Abstractions</AssemblyName>
-        <Description>Library to simplify the hosting of console applications by making it easier to setup dependency injection, logging and configurations.</Description>
-        <Product>SimpleSoft.Hosting</Product>
-        <Company>SimpleSoft.pt</Company>
-        <Copyright>Copyright © 2017 SimpleSoft.pt</Copyright>
-        <Authors>João Simões</Authors>
-    </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>SimpleSoft.Hosting</RootNamespace>
+    <AssemblyTitle>SimpleSoft.Hosting.Abstractions</AssemblyTitle>
+    <AssemblyName>SimpleSoft.Hosting.Abstractions</AssemblyName>
+    <Description>Library to simplify the hosting of console applications by making it easier to setup dependency injection, logging and configurations.</Description>
+    <Product>SimpleSoft.Hosting</Product>
+    <Company>SimpleSoft.pt</Company>
+    <Copyright>Copyright © 2017 SimpleSoft.pt</Copyright>
+    <Authors>João Simões</Authors>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <!--<AssemblyOriginatorKeyFile>../../tools/SimpleSoft.Mediator.snk</AssemblyOriginatorKeyFile>-->
-        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-        <!--<SignAssembly>true</SignAssembly>-->
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GenerateAssemblyTitleAttribute>true</GenerateAssemblyTitleAttribute>
-        <GenerateAssemblyDescriptionAttribute>true</GenerateAssemblyDescriptionAttribute>
-        <TargetFramework>netstandard1.1</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>../../Tools/SimpleSoft.Hosting.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyTitleAttribute>true</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>true</GenerateAssemblyDescriptionAttribute>
+    <TargetFramework>netstandard1.1</TargetFramework>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <PackageId>SimpleSoft.Hosting.Abstractions</PackageId>
-        <PackageTags>hosting;command line;console</PackageTags>
-        <PackageIconUrl>https://avatars2.githubusercontent.com/u/30837484</PackageIconUrl>
-        <PackageProjectUrl>https://github.com/simplesoft-pt/Hosting</PackageProjectUrl>
-        <PackageLicenseUrl>https://raw.githubusercontent.com/simplesoft-pt/Hosting/master/LICENSE</PackageLicenseUrl>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/simplesoft-pt/Hosting.git</RepositoryUrl>
-        <GeneratePackageOnBuild Condition=" '$(BuildConfiguration)' == 'release' ">true</GeneratePackageOnBuild>
-    </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>SimpleSoft.Hosting.Abstractions</PackageId>
+    <PackageTags>hosting;command line;console</PackageTags>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/30837484</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/simplesoft-pt/Hosting</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/simplesoft-pt/Hosting/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/simplesoft-pt/Hosting.git</RepositoryUrl>
+    <GeneratePackageOnBuild Condition=" '$(BuildConfiguration)' == 'release' ">true</GeneratePackageOnBuild>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0.17259</FileVersion>
-        <VersionPrefix>1.0.0-dev-01</VersionPrefix>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.17259</FileVersion>
+    <VersionPrefix>1.0.0-dev-01</VersionPrefix>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.0.0" />
-      <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="1.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
+  </ItemGroup>
 
 </Project>
