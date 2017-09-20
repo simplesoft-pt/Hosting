@@ -39,12 +39,12 @@ namespace SimpleSoft.Hosting
     {
         private bool _disposed;
         private ILoggerFactory _loggerFactory;
-        private readonly List<Action<ConfigurationBuilderParam>> _configurationBuilderHandlers = new List<Action<ConfigurationBuilderParam>>();
-        private readonly List<Action<ConfigurationHandlerParam>> _configurationHandlers = new List<Action<ConfigurationHandlerParam>>();
-        private readonly List<Action<LoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<LoggerFactoryHandlerParam>>();
-        private readonly List<Action<ServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<ServiceCollectionHandlerParam>>();
-        private Func<ServiceProviderBuilderParam, IServiceProvider> _serviceProviderBuilder = p => p.ServiceCollection.BuildServiceProvider();
-        private readonly List<Action<ConfigureHandlerParam>> _configureHandlers = new List<Action<ConfigureHandlerParam>>();
+        private readonly List<Action<IConfigurationBuilderParam>> _configurationBuilderHandlers = new List<Action<IConfigurationBuilderParam>>();
+        private readonly List<Action<IConfigurationHandlerParam>> _configurationHandlers = new List<Action<IConfigurationHandlerParam>>();
+        private readonly List<Action<ILoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<ILoggerFactoryHandlerParam>>();
+        private readonly List<Action<IServiceCollectionHandlerParam>> _serviceCollectionHandlers = new List<Action<IServiceCollectionHandlerParam>>();
+        private Func<IServiceProviderBuilderParam, IServiceProvider> _serviceProviderBuilder = p => p.ServiceCollection.BuildServiceProvider();
+        private readonly List<Action<IConfigureHandlerParam>> _configureHandlers = new List<Action<IConfigureHandlerParam>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -114,10 +114,10 @@ namespace SimpleSoft.Hosting
         #region IConfigurationBuilder
         
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ConfigurationBuilderParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
+        public IReadOnlyCollection<Action<IConfigurationBuilderParam>> ConfigurationBuilderHandlers => _configurationBuilderHandlers;
 
         /// <inheritdoc />
-        public void AddConfigurationBuilderHandler(Action<ConfigurationBuilderParam> handler)
+        public void AddConfigurationBuilderHandler(Action<IConfigurationBuilderParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
@@ -129,10 +129,10 @@ namespace SimpleSoft.Hosting
         #region IConfigurationRoot
 
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ConfigurationHandlerParam>> ConfigurationHandlers => _configurationHandlers;
+        public IReadOnlyCollection<Action<IConfigurationHandlerParam>> ConfigurationHandlers => _configurationHandlers;
 
         /// <inheritdoc />
-        public void AddConfigurationHandler(Action<ConfigurationHandlerParam> handler)
+        public void AddConfigurationHandler(Action<IConfigurationHandlerParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
@@ -151,10 +151,10 @@ namespace SimpleSoft.Hosting
         }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<LoggerFactoryHandlerParam>> LoggerFactoryHandlers => _loggerFactoryHandlers;
+        public IReadOnlyCollection<Action<ILoggerFactoryHandlerParam>> LoggerFactoryHandlers => _loggerFactoryHandlers;
 
         /// <inheritdoc />
-        public void AddLoggerFactoryHandler(Action<LoggerFactoryHandlerParam> handler)
+        public void AddLoggerFactoryHandler(Action<ILoggerFactoryHandlerParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
@@ -166,10 +166,10 @@ namespace SimpleSoft.Hosting
         #region IServiceCollection
 
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ServiceCollectionHandlerParam>> ServiceCollectionHandlers => _serviceCollectionHandlers;
+        public IReadOnlyCollection<Action<IServiceCollectionHandlerParam>> ServiceCollectionHandlers => _serviceCollectionHandlers;
 
         /// <inheritdoc />
-        public void AddServiceCollectionHandler(Action<ServiceCollectionHandlerParam> handler)
+        public void AddServiceCollectionHandler(Action<IServiceCollectionHandlerParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
@@ -179,7 +179,7 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <inheritdoc />
-        public Func<ServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder
+        public Func<IServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder
         {
             get => _serviceProviderBuilder;
             set => _serviceProviderBuilder = value ?? throw new ArgumentNullException(nameof(value));
@@ -188,11 +188,11 @@ namespace SimpleSoft.Hosting
         #region IServiceProvider
 
         /// <inheritdoc />
-        public IReadOnlyCollection<Action<ConfigureHandlerParam>> ConfigureHandlers => _configureHandlers;
+        public IReadOnlyCollection<Action<IConfigureHandlerParam>> ConfigureHandlers => _configureHandlers;
 
         /// <inheritdoc />
         /// <param name="handler">The handler to add</param>
-        public void AddConfigureHandler(Action<ConfigureHandlerParam> handler)
+        public void AddConfigureHandler(Action<IConfigureHandlerParam> handler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 

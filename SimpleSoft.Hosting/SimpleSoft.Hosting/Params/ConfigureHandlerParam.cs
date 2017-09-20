@@ -24,34 +24,26 @@
 
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace SimpleSoft.Hosting.Params
 {
-    /// <summary>
-    /// The parameter for handlers that configure the <see cref="IConfigurationRoot"/>.
-    /// </summary>
-    public sealed class ConfigurationHandlerParam
+    internal sealed class ConfigureHandlerParam : IConfigureHandlerParam
     {
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="configuration">The configuration root</param>
-        /// <param name="environment">The hosting environment</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public ConfigurationHandlerParam(IConfigurationRoot configuration, IHostingEnvironment environment)
+        public ConfigureHandlerParam(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment environment)
         {
+            ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
-
-        /// <summary>
-        /// The configuration root.
-        /// </summary>
-        public IConfigurationRoot Configuration { get; }
-
-        /// <summary>
-        /// The hosting environment.
-        /// </summary>
+        
+        public IServiceProvider ServiceProvider { get; }
+        
+        public ILoggerFactory LoggerFactory { get; }
+        
+        public IConfiguration Configuration { get; }
+        
         public IHostingEnvironment Environment { get; }
     }
 }

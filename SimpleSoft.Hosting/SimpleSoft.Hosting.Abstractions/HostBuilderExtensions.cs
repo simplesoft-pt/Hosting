@@ -43,7 +43,7 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder ConfigureConfigurationBuilder<TBuilder>(this TBuilder builder, Action<ConfigurationBuilderParam> handler)
+        public static TBuilder ConfigureConfigurationBuilder<TBuilder>(this TBuilder builder, Action<IConfigurationBuilderParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -60,7 +60,7 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder ConfigureConfiguration<TBuilder>(this TBuilder builder, Action<ConfigurationHandlerParam> handler)
+        public static TBuilder ConfigureConfiguration<TBuilder>(this TBuilder builder, Action<IConfigurationHandlerParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -94,7 +94,7 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder ConfigureLoggerFactory<TBuilder>(this TBuilder builder, Action<LoggerFactoryHandlerParam> handler)
+        public static TBuilder ConfigureLoggerFactory<TBuilder>(this TBuilder builder, Action<ILoggerFactoryHandlerParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -111,7 +111,7 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder ConfigureServiceCollection<TBuilder>(this TBuilder builder, Action<ServiceCollectionHandlerParam> handler)
+        public static TBuilder ConfigureServiceCollection<TBuilder>(this TBuilder builder, Action<IServiceCollectionHandlerParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -128,7 +128,7 @@ namespace SimpleSoft.Hosting
         /// <param name="providerBuilder">The provider builder to use</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder UseServiceProviderBuilder<TBuilder>(this TBuilder builder, Func<ServiceProviderBuilderParam, IServiceProvider> providerBuilder)
+        public static TBuilder UseServiceProviderBuilder<TBuilder>(this TBuilder builder, Func<IServiceProviderBuilderParam, IServiceProvider> providerBuilder)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -145,7 +145,7 @@ namespace SimpleSoft.Hosting
         /// <param name="handler">The handler to add</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder Configure<TBuilder>(this TBuilder builder, Action<ConfigureHandlerParam> handler)
+        public static TBuilder Configure<TBuilder>(this TBuilder builder, Action<IConfigureHandlerParam> handler)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));

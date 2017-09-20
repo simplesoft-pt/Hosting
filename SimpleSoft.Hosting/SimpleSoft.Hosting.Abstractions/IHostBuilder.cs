@@ -47,13 +47,13 @@ namespace SimpleSoft.Hosting
         /// Collection of handlers that configure the <see cref="IConfigurationBuilder"/>
         /// that will be used to generate the <see cref="IConfigurationRoot"/>.
         /// </summary>
-        IReadOnlyCollection<Action<ConfigurationBuilderParam>> ConfigurationBuilderHandlers { get; }
+        IReadOnlyCollection<Action<IConfigurationBuilderParam>> ConfigurationBuilderHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="ConfigurationBuilderHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddConfigurationBuilderHandler(Action<ConfigurationBuilderParam> handler);
+        void AddConfigurationBuilderHandler(Action<IConfigurationBuilderParam> handler);
 
         #endregion
 
@@ -62,13 +62,13 @@ namespace SimpleSoft.Hosting
         /// <summary>
         /// Collection of handlers that configure the <see cref="IConfigurationRoot"/>.
         /// </summary>
-        IReadOnlyCollection<Action<ConfigurationHandlerParam>> ConfigurationHandlers { get; }
+        IReadOnlyCollection<Action<IConfigurationHandlerParam>> ConfigurationHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="ConfigurationHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddConfigurationHandler(Action<ConfigurationHandlerParam> handler);
+        void AddConfigurationHandler(Action<IConfigurationHandlerParam> handler);
 
         #endregion
 
@@ -82,13 +82,13 @@ namespace SimpleSoft.Hosting
         /// <summary>
         /// Collection of handlers that configure the <see cref="ILoggerFactory"/>.
         /// </summary>
-        IReadOnlyCollection<Action<LoggerFactoryHandlerParam>> LoggerFactoryHandlers { get; }
+        IReadOnlyCollection<Action<ILoggerFactoryHandlerParam>> LoggerFactoryHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="LoggerFactoryHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddLoggerFactoryHandler(Action<LoggerFactoryHandlerParam> handler);
+        void AddLoggerFactoryHandler(Action<ILoggerFactoryHandlerParam> handler);
 
         #endregion
 
@@ -97,33 +97,33 @@ namespace SimpleSoft.Hosting
         /// <summary>
         /// Collection of handlers that configure the <see cref="IServiceCollection"/>.
         /// </summary>
-        IReadOnlyCollection<Action<ServiceCollectionHandlerParam>> ServiceCollectionHandlers { get; }
+        IReadOnlyCollection<Action<IServiceCollectionHandlerParam>> ServiceCollectionHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="ServiceCollectionHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddServiceCollectionHandler(Action<ServiceCollectionHandlerParam> handler);
+        void AddServiceCollectionHandler(Action<IServiceCollectionHandlerParam> handler);
 
         #endregion
 
         /// <summary>
         /// Builds the <see cref="IServiceProvider"/>.
         /// </summary>
-        Func<ServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder { get; set; }
+        Func<IServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder { get; set; }
 
         #region IServiceProvider
 
         /// <summary>
         /// Collection of handlers that configure the <see cref="IServiceProvider"/>.
         /// </summary>
-        IReadOnlyCollection<Action<ConfigureHandlerParam>> ConfigureHandlers { get; }
+        IReadOnlyCollection<Action<IConfigureHandlerParam>> ConfigureHandlers { get; }
 
         /// <summary>
         /// Adds an handler to the <see cref="ConfigureHandlers"/> collection.
         /// </summary>
         /// <param name="handler">The handler to add</param>
-        void AddConfigureHandler(Action<ConfigureHandlerParam> handler);
+        void AddConfigureHandler(Action<IConfigureHandlerParam> handler);
 
         #endregion
 

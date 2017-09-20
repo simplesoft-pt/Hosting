@@ -23,48 +23,20 @@
 #endregion
 
 using System;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleSoft.Hosting.Params;
+using Microsoft.Extensions.Configuration;
 
-namespace SimpleSoft.Hosting
+namespace SimpleSoft.Hosting.Params
 {
-    /// <inheritdoc />
-    public abstract class HostStartup : IHostStartup
+    internal sealed class ConfigurationBuilderParam : IConfigurationBuilderParam
     {
-        /// <inheritdoc />
-        public virtual void ConfigureConfigurationBuilder(IConfigurationBuilderParam param)
+        public ConfigurationBuilderParam(IConfigurationBuilder builder, IHostingEnvironment environment)
         {
-            
+            Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
-
-        /// <inheritdoc />
-        public virtual void ConfigureConfiguration(IConfigurationHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void ConfigureLoggerFactory(ILoggerFactoryHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void ConfigureServiceCollection(IServiceCollectionHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual IServiceProvider BuildServiceProvider(IServiceProviderBuilderParam param)
-        {
-            return param.ServiceCollection.BuildServiceProvider();
-        }
-
-        /// <inheritdoc />
-        public virtual void Configure(IConfigureHandlerParam param)
-        {
-
-        }
+        
+        public IConfigurationBuilder Builder { get; }
+        
+        public IHostingEnvironment Environment { get; }
     }
 }

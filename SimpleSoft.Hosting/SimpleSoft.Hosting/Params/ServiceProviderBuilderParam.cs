@@ -24,49 +24,27 @@
 
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace SimpleSoft.Hosting.Params
 {
-    /// <summary>
-    /// The parameter for handlers that configure the <see cref="IServiceProvider"/>.
-    /// </summary>
-    public sealed class ConfigureHandlerParam
+    internal sealed class ServiceProviderBuilderParam : IServiceProviderBuilderParam
     {
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="serviceProvider">The service collection</param>
-        /// <param name="loggerFactory">The logger factory</param>
-        /// <param name="configuration">The hosting configurations</param>
-        /// <param name="environment">The hosting environment</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public ConfigureHandlerParam(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment environment)
+        public ServiceProviderBuilderParam(IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment environment)
         {
-            ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
-
-        /// <summary>
-        /// The service collection.
-        /// </summary>
-        public IServiceProvider ServiceProvider { get; }
-
-        /// <summary>
-        /// The logger factory.
-        /// </summary>
+        
+        public IServiceCollection ServiceCollection { get; }
+        
         public ILoggerFactory LoggerFactory { get; }
-
-        /// <summary>
-        /// The hosting configurations.
-        /// </summary>
+        
         public IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// The hosting environment.
-        /// </summary>
+        
         public IHostingEnvironment Environment { get; }
     }
 }

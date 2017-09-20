@@ -32,42 +32,26 @@ namespace SimpleSoft.Hosting.Params
     /// <summary>
     /// The parameter for handlers that configure the <see cref="IServiceCollection"/>.
     /// </summary>
-    public sealed class ServiceCollectionHandlerParam
+    public interface IServiceCollectionHandlerParam
     {
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection</param>
-        /// <param name="loggerFactory">The logger factory</param>
-        /// <param name="configuration">The hosting configurations</param>
-        /// <param name="environment">The hosting environment</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public ServiceCollectionHandlerParam(IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment environment)
-        {
-            ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
-            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
-        }
-
         /// <summary>
         /// The service collection.
         /// </summary>
-        public IServiceCollection ServiceCollection { get; }
+        IServiceCollection ServiceCollection { get; }
 
         /// <summary>
         /// The logger factory.
         /// </summary>
-        public ILoggerFactory LoggerFactory { get; }
+        ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// The hosting configurations.
         /// </summary>
-        public IConfiguration Configuration { get; }
+        IConfiguration Configuration { get; }
 
         /// <summary>
         /// The hosting environment.
         /// </summary>
-        public IHostingEnvironment Environment { get; }
+        IHostingEnvironment Environment { get; }
     }
 }

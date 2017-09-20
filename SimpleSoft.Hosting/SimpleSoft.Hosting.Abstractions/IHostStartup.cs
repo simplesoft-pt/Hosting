@@ -41,37 +41,37 @@ namespace SimpleSoft.Hosting
         /// create the host configurations.
         /// </summary>
         /// <param name="param">Configuration arguments</param>
-        void ConfigureConfigurationBuilder(ConfigurationBuilderParam param);
+        void ConfigureConfigurationBuilder(IConfigurationBuilderParam param);
 
         /// <summary>
         /// Configure the <see cref="IConfigurationRoot"/> instance.
         /// </summary>
         /// <param name="param">Configuration arguments</param>
-        void ConfigureConfiguration(ConfigurationHandlerParam param);
+        void ConfigureConfiguration(IConfigurationHandlerParam param);
 
         /// <summary>
         /// Configure the <see cref="ILoggerFactory"/> instance.
         /// </summary>
         /// <param name="param">Configuration arguments</param>
-        void ConfigureLoggerFactory(LoggerFactoryHandlerParam param);
+        void ConfigureLoggerFactory(ILoggerFactoryHandlerParam param);
 
         /// <summary>
         /// Configure the <see cref="IServiceCollection"/> instance.
         /// </summary>
         /// <param name="param">Configuration arguments</param>
-        void ConfigureServiceCollection(ServiceCollectionHandlerParam param);
+        void ConfigureServiceCollection(IServiceCollectionHandlerParam param);
 
         /// <summary>
         /// Builds the <see cref="IServiceProvider"/> instance.
         /// </summary>
         /// <param name="param">Builder params</param>
         /// <returns>The service provider</returns>
-        IServiceProvider BuildServiceProvider(ServiceProviderBuilderParam param);
+        IServiceProvider BuildServiceProvider(IServiceProviderBuilderParam param);
 
         /// <summary>
         /// Configures the application using the <see cref="IServiceProvider"/>.
         /// </summary>
         /// <param name="param">Configuration arguments</param>
-        void Configure(ConfigureHandlerParam param);
+        void Configure(IConfigureHandlerParam param);
     }
 }

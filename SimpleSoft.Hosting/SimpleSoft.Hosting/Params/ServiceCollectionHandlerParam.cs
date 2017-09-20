@@ -23,48 +23,28 @@
 #endregion
 
 using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleSoft.Hosting.Params;
+using Microsoft.Extensions.Logging;
 
-namespace SimpleSoft.Hosting
+namespace SimpleSoft.Hosting.Params
 {
-    /// <inheritdoc />
-    public abstract class HostStartup : IHostStartup
+    internal sealed class ServiceCollectionHandlerParam : IServiceCollectionHandlerParam
     {
-        /// <inheritdoc />
-        public virtual void ConfigureConfigurationBuilder(IConfigurationBuilderParam param)
+        public ServiceCollectionHandlerParam(IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment environment)
         {
-            
+            ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
-
-        /// <inheritdoc />
-        public virtual void ConfigureConfiguration(IConfigurationHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void ConfigureLoggerFactory(ILoggerFactoryHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void ConfigureServiceCollection(IServiceCollectionHandlerParam param)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual IServiceProvider BuildServiceProvider(IServiceProviderBuilderParam param)
-        {
-            return param.ServiceCollection.BuildServiceProvider();
-        }
-
-        /// <inheritdoc />
-        public virtual void Configure(IConfigureHandlerParam param)
-        {
-
-        }
+        
+        public IServiceCollection ServiceCollection { get; }
+        
+        public ILoggerFactory LoggerFactory { get; }
+        
+        public IConfiguration Configuration { get; }
+        
+        public IHostingEnvironment Environment { get; }
     }
 }
