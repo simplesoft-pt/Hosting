@@ -34,7 +34,7 @@ namespace SimpleSoft.Hosting
     /// <summary>
     /// Builder for <see cref="IHost"/> instances.
     /// </summary>
-    public interface IHostBuilder
+    public interface IHostBuilder : IDisposable
     {
         /// <summary>
         /// The builder hosting environment.

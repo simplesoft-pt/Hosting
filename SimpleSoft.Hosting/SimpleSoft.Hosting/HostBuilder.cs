@@ -36,7 +36,7 @@ namespace SimpleSoft.Hosting
     /// <summary>
     /// Builder for <see cref="IHost"/> instances.
     /// </summary>
-    public class HostBuilder : IHostBuilder, IDisposable
+    public class HostBuilder : IHostBuilder
     {
         private bool _disposed;
         private ILoggerFactory _loggerFactory;
