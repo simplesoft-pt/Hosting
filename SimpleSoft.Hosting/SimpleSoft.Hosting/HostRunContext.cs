@@ -27,22 +27,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleSoft.Hosting
 {
-    /// <summary>
-    /// The run context for a given host type
-    /// </summary>
-    /// <typeparam name="THost">The host type</typeparam>
-    public class HostRunContext<THost> : IDisposable
+    internal sealed class HostRunContext<THost> : IHostRunContext<THost>
         where THost : class, IHost
     {
         private bool _disposed;
         private IServiceScope _serviceScope;
         private THost _host;
-
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="serviceScope">The service scope provider</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        
         public HostRunContext(IServiceScope serviceScope)
         {
             _serviceScope = serviceScope ?? throw new ArgumentNullException(nameof(serviceScope));
@@ -54,9 +45,6 @@ namespace SimpleSoft.Hosting
             Dispose(false);
         }
 
-        /// <summary>
-        /// The host to be run
-        /// </summary>
         public THost Host
         {
             get
@@ -65,10 +53,7 @@ namespace SimpleSoft.Hosting
                 return _host ?? (_host = ServiceProvider.GetRequiredService<THost>());
             }
         }
-
-        /// <summary>
-        /// The service provider
-        /// </summary>
+        
         public IServiceProvider ServiceProvider
         {
             get
@@ -78,20 +63,13 @@ namespace SimpleSoft.Hosting
             }
         }
 
-        #region IDisposable
-
-        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Releases all resources hold by this instance
-        /// </summary>
-        /// <param name="disposing">Is the classe being disposed?</param>
-        protected void Dispose(bool disposing)
+        
+        private void Dispose(bool disposing)
         {
             if(_disposed)
                 return;
@@ -102,8 +80,6 @@ namespace SimpleSoft.Hosting
             _serviceScope = null;
             _disposed = true;
         }
-
-        #endregion
 
         private void FailIfDisposed()
         {

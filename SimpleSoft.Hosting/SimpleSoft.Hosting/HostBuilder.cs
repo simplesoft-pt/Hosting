@@ -202,7 +202,7 @@ namespace SimpleSoft.Hosting
         #endregion
 
         /// <inheritdoc />
-        public HostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost
+        public IHostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(HostBuilder));

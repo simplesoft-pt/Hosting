@@ -132,6 +132,6 @@ namespace SimpleSoft.Hosting
         /// </summary>
         /// <typeparam name="THost">The host type</typeparam>
         /// <returns>Run context for the host</returns>
-        HostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost;
+        IHostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost;
     }
 }
