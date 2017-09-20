@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -121,6 +122,7 @@ namespace SimpleSoft.Hosting
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
+            FailIfDisposed();
             _configurationBuilderHandlers.Add(handler);
         }
 
@@ -136,6 +138,7 @@ namespace SimpleSoft.Hosting
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
+            FailIfDisposed();
             _configurationHandlers.Add(handler);
         }
 
@@ -147,7 +150,11 @@ namespace SimpleSoft.Hosting
         public ILoggerFactory LoggerFactory
         {
             get => _loggerFactory;
-            set => _loggerFactory = value ?? throw new ArgumentNullException(nameof(value));
+            set
+            {
+                FailIfDisposed();
+                _loggerFactory = value ?? throw new ArgumentNullException(nameof(value));
+            }
         }
 
         /// <inheritdoc />
@@ -173,6 +180,7 @@ namespace SimpleSoft.Hosting
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
+            FailIfDisposed();
             _serviceCollectionHandlers.Add(handler);
         }
 
@@ -182,7 +190,11 @@ namespace SimpleSoft.Hosting
         public Func<IServiceProviderBuilderParam, IServiceProvider> ServiceProviderBuilder
         {
             get => _serviceProviderBuilder;
-            set => _serviceProviderBuilder = value ?? throw new ArgumentNullException(nameof(value));
+            set
+            {
+                FailIfDisposed();
+                _serviceProviderBuilder = value ?? throw new ArgumentNullException(nameof(value));
+            }
         }
 
         #region IServiceProvider
@@ -196,6 +208,7 @@ namespace SimpleSoft.Hosting
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
+            FailIfDisposed();
             _configureHandlers.Add(handler);
         }
 
@@ -204,8 +217,7 @@ namespace SimpleSoft.Hosting
         /// <inheritdoc />
         public IHostRunContext<THost> BuildRunContext<THost>() where THost : class, IHost
         {
-            if (_disposed)
-                throw new ObjectDisposedException(nameof(HostBuilder));
+            FailIfDisposed();
 
             var logger = LoggerFactory.CreateLogger<HostBuilder>();
 
@@ -312,6 +324,13 @@ namespace SimpleSoft.Hosting
                 handler(param);
 
             return param.ServiceProvider;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void FailIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(HostBuilder));
         }
 
         #endregion

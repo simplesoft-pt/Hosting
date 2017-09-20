@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleSoft.Hosting
@@ -81,6 +82,7 @@ namespace SimpleSoft.Hosting
             _disposed = true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FailIfDisposed()
         {
             if (_disposed)
