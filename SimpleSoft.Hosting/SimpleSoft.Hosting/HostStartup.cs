@@ -56,7 +56,7 @@ namespace SimpleSoft.Hosting
         }
 
         /// <inheritdoc />
-        public IServiceProvider BuildServiceProvider(ServiceProviderBuilderParam param)
+        public virtual IServiceProvider BuildServiceProvider(ServiceProviderBuilderParam param)
         {
             return param.ServiceCollection.BuildServiceProvider();
         }
