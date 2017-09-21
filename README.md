@@ -31,7 +31,7 @@ This library is compatible with the following frameworks:
   * .NET Standard 1.5;
 
 ## Usage
-Documentation is available via [wiki](https://github.com/simplesoft-pt/Hosting/wiki) or you can check the [working](https://github.com/simplesoft-pt/Hosting/tree/master/work/) examples or [test](https://github.com/simplesoft-pt/Hosting/tree/master/test) code.
+Documentation is available via [wiki](https://github.com/simplesoft-pt/Hosting/wiki) or you can check the [working examples](https://github.com/simplesoft-pt/Hosting/tree/master/SimpleSoft.Hosting/SimpleSoft.Hosting.Example) or [test](https://github.com/simplesoft-pt/Hosting/tree/master/test) code.
 
 Here is an example of a console application:
 ```csharp
