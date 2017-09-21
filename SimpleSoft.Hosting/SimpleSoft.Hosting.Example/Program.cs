@@ -31,6 +31,7 @@ namespace SimpleSoft.Hosting.Example
         {
             await HostingUsingOnlyInterfaceMethodsAsync(args, ct);
             await HostingExtensionMethodsAsync(args, ct);
+            await HostingUsingStartupAsync(args, ct);
         }
 
         private static async Task HostingUsingOnlyInterfaceMethodsAsync(string[] args, CancellationToken ct)
@@ -141,6 +142,25 @@ namespace SimpleSoft.Hosting.Example
             }
 
             logger.LogInformation("Example02: Terminated");
+        }
+
+        private static async Task HostingUsingStartupAsync(string[] args, CancellationToken ct)
+        {
+            var loggerFactory = new LoggerFactory()
+                .AddConsole(LogLevel.Trace, true);
+
+            var logger = loggerFactory.CreateLogger<Program>();
+
+            logger.LogInformation("Example03: Hosting an application using startup class");
+
+            using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+                .UseLoggerFactory(loggerFactory)
+                .UseStartup(new ExampleStartup(args)))
+            {
+                await hostBuilder.RunHostAsync<ExampleHost>(ct);
+            }
+
+            logger.LogInformation("Example03: Terminated");
         }
     }
 }
