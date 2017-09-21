@@ -21,7 +21,7 @@ dotnet add package SimpleSoft.Hosting.Abstractions
 dotnet add package SimpleSoft.Hosting
 ```
 ## Compatibility
-This library is compatible with the folowing frameworks:
+This library is compatible with the following frameworks:
 
 * SimpleSoft.Hosting.Abstractions
   * .NET Standard 1.1;
