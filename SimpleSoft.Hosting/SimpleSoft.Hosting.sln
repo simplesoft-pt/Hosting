@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{5B7BB282
 		..\Tools\UpdateAllVersions.ps1 = ..\Tools\UpdateAllVersions.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{DC076CA8-9848-4338-ADF3-9168A734A341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSoft.Hosting.Example", "SimpleSoft.Hosting.Example\SimpleSoft.Hosting.Example.csproj", "{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +34,10 @@ Global
 		{EB1182DD-BD98-4E04-99F0-8CF62B93AA70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB1182DD-BD98-4E04-99F0-8CF62B93AA70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB1182DD-BD98-4E04-99F0-8CF62B93AA70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +45,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BFACB999-6972-463F-AD22-4357B856CED6} = {35F68D25-287C-431D-894C-9F65267F3530}
 		{EB1182DD-BD98-4E04-99F0-8CF62B93AA70} = {35F68D25-287C-431D-894C-9F65267F3530}
+		{3A62DFE4-CFEF-4673-A31E-D1DBCC11D8D8} = {DC076CA8-9848-4338-ADF3-9168A734A341}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {658C53FD-8F3A-432B-8F39-6685D554F1CE}
