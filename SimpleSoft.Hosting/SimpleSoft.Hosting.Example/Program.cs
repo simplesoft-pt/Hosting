@@ -30,6 +30,7 @@ namespace SimpleSoft.Hosting.Example
         public static async Task MainAsync(string[] args, CancellationToken ct)
         {
             await HostingUsingOnlyInterfaceMethodsAsync(args, ct);
+            await HostingExtensionMethodsAsync(args, ct);
         }
 
         private static async Task HostingUsingOnlyInterfaceMethodsAsync(string[] args, CancellationToken ct)
@@ -88,6 +89,58 @@ namespace SimpleSoft.Hosting.Example
             }
 
             logger.LogInformation("Example01: Terminated");
+        }
+
+        private static async Task HostingExtensionMethodsAsync(string[] args, CancellationToken ct)
+        {
+            var loggerFactory = new LoggerFactory()
+                .AddConsole(LogLevel.Trace, true);
+
+            var logger = loggerFactory.CreateLogger<Program>();
+
+            logger.LogInformation("Example02: Hosting an application using extension methods");
+
+            using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+                .UseLoggerFactory(loggerFactory)
+                .ConfigureConfigurationBuilder(param =>
+                {
+                    param.Builder
+                        .SetBasePath(param.Environment.ContentRootPath)
+                        .AddJsonFile("appsettings.json", true, true)
+                        .AddJsonFile($"appsettings.{param.Environment.Name}.json", true, true)
+                        .AddEnvironmentVariables()
+                        .AddCommandLine(args);
+                })
+                .ConfigureConfiguration(param =>
+                {
+                    if (param.Environment.IsDevelopment())
+                        param.Configuration["CacheTimeoutInMs"] = "1000";
+                })
+                .ConfigureLoggerFactory(param =>
+                {
+                    param.LoggerFactory.AddNLog();
+
+                    param.LoggerFactory.ConfigureNLog(
+                        param.Environment.ContentRootFileProvider.GetFileInfo("nlog.config").PhysicalPath);
+                })
+                .ConfigureServiceCollection(param =>
+                {
+                    param.ServiceCollection
+                        .AddOptions()
+                        .Configure<ExampleHostOptions>(param.Configuration)
+                        .AddSingleton(k => k.GetRequiredService<IOptions<ExampleHostOptions>>().Value);
+                })
+                .UseServiceProviderBuilder(param =>
+                {
+                    var container = new Autofac.ContainerBuilder();
+                    container.Populate(param.ServiceCollection);
+                    return new AutofacServiceProvider(container.Build());
+                }))
+            {
+                await hostBuilder.RunHostAsync<ExampleHost>(ct);
+            }
+
+            logger.LogInformation("Example02: Terminated");
         }
     }
 }
