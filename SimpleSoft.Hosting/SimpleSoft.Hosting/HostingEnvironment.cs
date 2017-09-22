@@ -85,16 +85,16 @@ namespace SimpleSoft.Hosting
         /// <returns>Hosting environment instance</returns>
         /// <see cref="ArgumentNullException"/>
         /// <see cref="ArgumentException"/>
-        public static HostingEnvironment BuildDefault(string environmentNameKey = "environment")
+        public static HostingEnvironment BuildDefault(string environmentNameKey = Constants.EnvironmentNameKeyDefault)
         {
             if (environmentNameKey == null)
                 throw new ArgumentNullException(nameof(environmentNameKey));
             if (string.IsNullOrWhiteSpace(environmentNameKey))
-                throw new ArgumentException("Value cannot be whitespace.", nameof(environmentNameKey));
+                throw new ArgumentException(Constants.ArgumentExceptionMessageWhitespaceString, nameof(environmentNameKey));
 
             var environment = Environment.GetEnvironmentVariable(environmentNameKey);
             if (string.IsNullOrWhiteSpace(environment))
-                environment = "Production";
+                environment = Constants.EnvironmentNameProduction;
 
 #if NETSTANDARD1_3
 

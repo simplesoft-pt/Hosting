@@ -63,7 +63,7 @@ namespace SimpleSoft.Hosting
         /// </summary>
         /// <param name="environmentNameKey">The environment key to be searched</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public HostBuilder(string environmentNameKey = "environment")
+        public HostBuilder(string environmentNameKey = Constants.EnvironmentNameKeyDefault)
             : this(HostingEnvironment.BuildDefault(environmentNameKey))
         {
 
