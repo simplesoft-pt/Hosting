@@ -25,6 +25,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleSoft.Hosting.Params;
 
@@ -35,6 +37,8 @@ namespace SimpleSoft.Hosting
     /// </summary>
     public static class HostBuilderExtensions
     {
+        #region ConfigureConfigurationBuilder
+
         /// <summary>
         /// Adds an handler to the <see cref="IHostBuilder.ConfigurationBuilderHandlers"/> collection.
         /// </summary>
@@ -53,6 +57,26 @@ namespace SimpleSoft.Hosting
         }
 
         /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ConfigurationBuilderHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureConfigurationBuilder<TBuilder>(this TBuilder builder, Action<IConfigurationBuilder, IHostingEnvironment> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            return builder.ConfigureConfigurationBuilder(p => handler(p.Builder, p.Environment));
+        }
+
+        #endregion
+
+        #region ConfigureConfiguration
+
+        /// <summary>
         /// Adds an handler to the <see cref="IHostBuilder.ConfigurationHandlers"/> collection.
         /// </summary>
         /// <typeparam name="TBuilder">The builder type</typeparam>
@@ -68,6 +92,26 @@ namespace SimpleSoft.Hosting
             builder.AddConfigurationHandler(handler);
             return builder;
         }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ConfigurationHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureConfiguration<TBuilder>(this TBuilder builder, Action<IConfigurationRoot, IHostingEnvironment> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            return builder.ConfigureConfiguration(p => handler(p.Configuration, p.Environment));
+        }
+
+        #endregion
+
+        #region UseLoggerFactory
 
         /// <summary>
         /// Uses the given <see cref="ILoggerFactory"/> instance.
@@ -104,6 +148,26 @@ namespace SimpleSoft.Hosting
         }
 
         /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.LoggerFactoryHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureLoggerFactory<TBuilder>(this TBuilder builder, Action<ILoggerFactory, IConfiguration, IHostingEnvironment> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            
+            return builder.ConfigureLoggerFactory(p => handler(p.LoggerFactory, p.Configuration, p.Environment));
+        }
+
+        #endregion
+
+        #region ConfigureServiceCollection
+
+        /// <summary>
         /// Adds an handler to the <see cref="IHostBuilder.ServiceCollectionHandlers"/> collection.
         /// </summary>
         /// <typeparam name="TBuilder">The builder type</typeparam>
@@ -119,6 +183,26 @@ namespace SimpleSoft.Hosting
             builder.AddServiceCollectionHandler(handler);
             return builder;
         }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ServiceCollectionHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder ConfigureServiceCollection<TBuilder>(this TBuilder builder, Action<IServiceCollection, ILoggerFactory, IConfiguration, IHostingEnvironment> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            return builder.ConfigureServiceCollection(p => handler(p.ServiceCollection, p.LoggerFactory, p.Configuration, p.Environment));
+        }
+
+        #endregion
+
+        #region UseServiceProviderBuilder
 
         /// <summary>
         /// Uses the given function as the <see cref="IServiceProvider"/> builder.
@@ -138,6 +222,27 @@ namespace SimpleSoft.Hosting
         }
 
         /// <summary>
+        /// Uses the given function as the <see cref="IServiceProvider"/> builder.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="providerBuilder">The provider builder to use</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder UseServiceProviderBuilder<TBuilder>(this TBuilder builder, Func<IServiceCollection, ILoggerFactory, IConfiguration, IHostingEnvironment, IServiceProvider> providerBuilder)
+            where TBuilder : IHostBuilder
+        {
+            if (providerBuilder == null) throw new ArgumentNullException(nameof(providerBuilder));
+
+            return builder.UseServiceProviderBuilder(p =>
+                providerBuilder(p.ServiceCollection, p.LoggerFactory, p.Configuration, p.Environment));
+        }
+
+        #endregion
+
+        #region Configure
+
+        /// <summary>
         /// Adds an handler to the <see cref="IHostBuilder.ConfigureHandlers"/> collection.
         /// </summary>
         /// <typeparam name="TBuilder">The builder type</typeparam>
@@ -153,6 +258,26 @@ namespace SimpleSoft.Hosting
             builder.AddConfigureHandler(handler);
             return builder;
         }
+
+        /// <summary>
+        /// Adds an handler to the <see cref="IHostBuilder.ConfigureHandlers"/> collection.
+        /// </summary>
+        /// <typeparam name="TBuilder">The builder type</typeparam>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="handler">The handler to add</param>
+        /// <returns>The builder instance</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static TBuilder Configure<TBuilder>(this TBuilder builder, Action<IServiceProvider, ILoggerFactory, IConfiguration, IHostingEnvironment> handler)
+            where TBuilder : IHostBuilder
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            
+            return builder.Configure(p => handler(p.ServiceProvider, p.LoggerFactory, p.Configuration, p.Environment));
+        }
+
+        #endregion
+
+        #region UseStartup
 
         /// <summary>
         /// Uses the given startup class to configure hosts.
@@ -193,6 +318,10 @@ namespace SimpleSoft.Hosting
             return builder;
         }
 
+        #endregion
+
+        #region RunHost
+
         /// <summary>
         /// Builds and runs a host instance of the given type.
         /// </summary>
@@ -226,5 +355,7 @@ namespace SimpleSoft.Hosting
             builder.RunHostAsync<THost>().ConfigureAwait(false)
                 .GetAwaiter().GetResult();
         }
+
+        #endregion
     }
 }
