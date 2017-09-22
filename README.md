@@ -20,6 +20,12 @@ Install-Package SimpleSoft.Hosting
 dotnet add package SimpleSoft.Hosting.Abstractions
 dotnet add package SimpleSoft.Hosting
 ```
+
+### Packet CLI
+```powershell
+paket add package SimpleSoft.Hosting.Abstractions
+paket add package SimpleSoft.Hosting
+```
 ## Compatibility
 This library is compatible with the following frameworks:
 
