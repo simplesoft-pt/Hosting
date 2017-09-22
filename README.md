@@ -70,6 +70,10 @@ public class Program
                 await hostBuilder.RunHostAsync<Host>(ct);
             }
         }
+        catch (TaskCanceledException)
+        {
+            logger.LogWarning("Application was terminated by user request");
+        }
         catch (Exception e)
         {
             logger.LogCritical(0, e, "Unexpected exception");
