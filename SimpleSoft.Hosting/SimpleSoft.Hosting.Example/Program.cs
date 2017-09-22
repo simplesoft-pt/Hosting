@@ -154,7 +154,7 @@ namespace SimpleSoft.Hosting.Example
                     await hostBuilder.RunHostAsync<ExampleHost>(ct);
                 }
 
-                logger.LogInformation("Example02: Terminated");
+                logger.LogInformation("Terminated");
             }
         }
 
