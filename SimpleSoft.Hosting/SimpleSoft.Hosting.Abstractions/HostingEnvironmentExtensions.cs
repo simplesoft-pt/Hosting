@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using SimpleSoft.Hosting.Exceptions;
 
 namespace SimpleSoft.Hosting
 {
@@ -32,13 +33,14 @@ namespace SimpleSoft.Hosting
     public static class HostingEnvironmentExtensions
     {
         /// <summary>
-        /// Checks if the current hosting environment name is "Production".
+        /// Checks if the current hosting environment name matches the given string.
+        /// The comparison is case insensitive.
         /// </summary>
         /// <param name="env">The hosting environment</param>
         /// <param name="environmentName">The environment name</param>
         /// <returns>True if the specified name is the same as the current environment, otherwise false.</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="WhitespaceStringException"></exception>
         public static bool IsEnvironment(this IHostingEnvironment env, string environmentName)
         {
             if (env == null)
@@ -46,7 +48,7 @@ namespace SimpleSoft.Hosting
             if (environmentName == null)
                 throw new ArgumentNullException(nameof(environmentName));
             if (string.IsNullOrWhiteSpace(environmentName))
-                throw new ArgumentException(Constants.ArgumentExceptionMessageWhitespaceString, nameof(environmentName));
+                throw new WhitespaceStringException(nameof(environmentName));
 
             return environmentName.Equals(env.Name, StringComparison.OrdinalIgnoreCase);
         }
