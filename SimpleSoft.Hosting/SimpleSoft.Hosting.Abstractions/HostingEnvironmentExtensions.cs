@@ -59,7 +59,7 @@ namespace SimpleSoft.Hosting
         /// <exception cref="ArgumentNullException"></exception>
         public static bool IsProduction(this IHostingEnvironment env)
         {
-            return env.IsEnvironment("Production");
+            return env.IsEnvironment(Constants.EnvironmentNameProduction);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SimpleSoft.Hosting
         /// <exception cref="ArgumentNullException"></exception>
         public static bool IsStaging(this IHostingEnvironment env)
         {
-            return env.IsEnvironment("Staging");
+            return env.IsEnvironment(Constants.EnvironmentNameStaging);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SimpleSoft.Hosting
         /// <exception cref="ArgumentNullException"></exception>
         public static bool IsDevelopment(this IHostingEnvironment env)
         {
-            return env.IsEnvironment("Development");
+            return env.IsEnvironment(Constants.EnvironmentNameDevelopment);
         }
     }
 }
