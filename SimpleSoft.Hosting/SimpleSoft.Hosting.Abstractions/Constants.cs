@@ -31,5 +31,7 @@ namespace SimpleSoft.Hosting
         public const string EnvironmentNameStaging = "Staging";
 
         public const string EnvironmentNameDevelopment = "Development";
+
+        public const string ArgumentExceptionMessageWhitespaceString = "Value cannot be whitespace.";
     }
 }

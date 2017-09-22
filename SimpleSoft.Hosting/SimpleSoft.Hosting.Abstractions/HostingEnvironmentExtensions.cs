@@ -46,7 +46,7 @@ namespace SimpleSoft.Hosting
             if (environmentName == null)
                 throw new ArgumentNullException(nameof(environmentName));
             if (string.IsNullOrWhiteSpace(environmentName))
-                throw new ArgumentException("Value cannot be whitespace.", nameof(environmentName));
+                throw new ArgumentException(Constants.ArgumentExceptionMessageWhitespaceString, nameof(environmentName));
 
             return environmentName.Equals(env.Name, StringComparison.OrdinalIgnoreCase);
         }
