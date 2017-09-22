@@ -67,7 +67,11 @@ namespace SimpleSoft.Hosting.Example
                     param.LoggerFactory.AddNLog();
 
                     param.LoggerFactory.ConfigureNLog(
-                        param.Environment.ContentRootFileProvider.GetFileInfo("nlog.config").PhysicalPath);
+                        param.Environment.ContentRootFileProvider.GetFileInfo(
+                                param.Environment.IsDevelopment()
+                                    ? "nlog.config"
+                                    : $"nlog.{param.Environment.Name}.config")
+                            .PhysicalPath);
                 });
                 hostBuilder.AddServiceCollectionHandler(param =>
                 {
@@ -122,7 +126,11 @@ namespace SimpleSoft.Hosting.Example
                     param.LoggerFactory.AddNLog();
 
                     param.LoggerFactory.ConfigureNLog(
-                        param.Environment.ContentRootFileProvider.GetFileInfo("nlog.config").PhysicalPath);
+                        param.Environment.ContentRootFileProvider.GetFileInfo(
+                                param.Environment.IsDevelopment()
+                                    ? "nlog.config"
+                                    : $"nlog.{param.Environment.Name}.config")
+                            .PhysicalPath);
                 })
                 .ConfigureServiceCollection(param =>
                 {
