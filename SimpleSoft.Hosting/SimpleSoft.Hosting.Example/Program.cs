@@ -41,59 +41,62 @@ namespace SimpleSoft.Hosting.Example
 
             var logger = loggerFactory.CreateLogger<Program>();
 
-            logger.LogInformation("Example01: Hosting an application using only interface methods");
-            
-            using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+            using (logger.BeginScope("Example:{exampleNumber}", "01"))
             {
-                LoggerFactory = loggerFactory
-            })
-            {
-                hostBuilder.AddConfigurationBuilderHandler(param =>
-                {
-                    param.Builder
-                        .SetBasePath(param.Environment.ContentRootPath)
-                        .AddJsonFile("appsettings.json", true, true)
-                        .AddJsonFile($"appsettings.{param.Environment.Name}.json", true, true)
-                        .AddEnvironmentVariables()
-                        .AddCommandLine(args);
-                });
-                hostBuilder.AddConfigurationHandler(param =>
-                {
-                    if (param.Environment.IsDevelopment())
-                        param.Configuration["CacheTimeoutInMs"] = "1000";
-                });
-                hostBuilder.AddLoggerFactoryHandler(param =>
-                {
-                    param.LoggerFactory.AddNLog();
+                logger.LogInformation("Hosting an application using only interface methods");
 
-                    param.LoggerFactory.ConfigureNLog(
-                        param.Environment.ContentRootFileProvider.GetFileInfo(
-                                param.Environment.IsDevelopment()
-                                    ? "nlog.config"
-                                    : $"nlog.{param.Environment.Name}.config")
-                            .PhysicalPath);
-                });
-                hostBuilder.AddServiceCollectionHandler(param =>
+                using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
                 {
-                    param.ServiceCollection
-                        .AddOptions()
-                        .Configure<ExampleHostOptions>(param.Configuration)
-                        .AddSingleton(k => k.GetRequiredService<IOptions<ExampleHostOptions>>().Value);
-                });
-                hostBuilder.ServiceProviderBuilder = param =>
+                    LoggerFactory = loggerFactory
+                })
                 {
-                    var container = new Autofac.ContainerBuilder();
-                    container.Populate(param.ServiceCollection);
-                    return new AutofacServiceProvider(container.Build());
-                };
+                    hostBuilder.AddConfigurationBuilderHandler(param =>
+                    {
+                        param.Builder
+                            .SetBasePath(param.Environment.ContentRootPath)
+                            .AddJsonFile("appsettings.json", true, true)
+                            .AddJsonFile($"appsettings.{param.Environment.Name}.json", true, true)
+                            .AddEnvironmentVariables()
+                            .AddCommandLine(args);
+                    });
+                    hostBuilder.AddConfigurationHandler(param =>
+                    {
+                        if (param.Environment.IsDevelopment())
+                            param.Configuration["CacheTimeoutInMs"] = "1000";
+                    });
+                    hostBuilder.AddLoggerFactoryHandler(param =>
+                    {
+                        param.LoggerFactory.AddNLog();
 
-                using (var ctx = hostBuilder.BuildRunContext<ExampleHost>())
-                {
-                    await ctx.Host.RunAsync(ct);
+                        param.LoggerFactory.ConfigureNLog(
+                            param.Environment.ContentRootFileProvider.GetFileInfo(
+                                    param.Environment.IsDevelopment()
+                                        ? "nlog.config"
+                                        : $"nlog.{param.Environment.Name}.config")
+                                .PhysicalPath);
+                    });
+                    hostBuilder.AddServiceCollectionHandler(param =>
+                    {
+                        param.ServiceCollection
+                            .AddOptions()
+                            .Configure<ExampleHostOptions>(param.Configuration)
+                            .AddSingleton(k => k.GetRequiredService<IOptions<ExampleHostOptions>>().Value);
+                    });
+                    hostBuilder.ServiceProviderBuilder = param =>
+                    {
+                        var container = new Autofac.ContainerBuilder();
+                        container.Populate(param.ServiceCollection);
+                        return new AutofacServiceProvider(container.Build());
+                    };
+
+                    using (var ctx = hostBuilder.BuildRunContext<ExampleHost>())
+                    {
+                        await ctx.Host.RunAsync(ct);
+                    }
                 }
-            }
 
-            logger.LogInformation("Example01: Terminated");
+                logger.LogInformation("Terminated");
+            }
         }
 
         private static async Task HostingExtensionMethodsAsync(string[] args, CancellationToken ct)
@@ -103,53 +106,56 @@ namespace SimpleSoft.Hosting.Example
 
             var logger = loggerFactory.CreateLogger<Program>();
 
-            logger.LogInformation("Example02: Hosting an application using extension methods");
-
-            using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
-                .UseLoggerFactory(loggerFactory)
-                .ConfigureConfigurationBuilder(param =>
-                {
-                    param.Builder
-                        .SetBasePath(param.Environment.ContentRootPath)
-                        .AddJsonFile("appsettings.json", true, true)
-                        .AddJsonFile($"appsettings.{param.Environment.Name}.json", true, true)
-                        .AddEnvironmentVariables()
-                        .AddCommandLine(args);
-                })
-                .ConfigureConfiguration(param =>
-                {
-                    if (param.Environment.IsDevelopment())
-                        param.Configuration["CacheTimeoutInMs"] = "1000";
-                })
-                .ConfigureLoggerFactory(param =>
-                {
-                    param.LoggerFactory.AddNLog();
-
-                    param.LoggerFactory.ConfigureNLog(
-                        param.Environment.ContentRootFileProvider.GetFileInfo(
-                                param.Environment.IsDevelopment()
-                                    ? "nlog.config"
-                                    : $"nlog.{param.Environment.Name}.config")
-                            .PhysicalPath);
-                })
-                .ConfigureServiceCollection(param =>
-                {
-                    param.ServiceCollection
-                        .AddOptions()
-                        .Configure<ExampleHostOptions>(param.Configuration)
-                        .AddSingleton(k => k.GetRequiredService<IOptions<ExampleHostOptions>>().Value);
-                })
-                .UseServiceProviderBuilder(param =>
-                {
-                    var container = new Autofac.ContainerBuilder();
-                    container.Populate(param.ServiceCollection);
-                    return new AutofacServiceProvider(container.Build());
-                }))
+            using (logger.BeginScope("Example:{exampleNumber}", "02"))
             {
-                await hostBuilder.RunHostAsync<ExampleHost>(ct);
-            }
+                logger.LogInformation("Hosting an application using extension methods");
 
-            logger.LogInformation("Example02: Terminated");
+                using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+                    .UseLoggerFactory(loggerFactory)
+                    .ConfigureConfigurationBuilder(param =>
+                    {
+                        param.Builder
+                            .SetBasePath(param.Environment.ContentRootPath)
+                            .AddJsonFile("appsettings.json", true, true)
+                            .AddJsonFile($"appsettings.{param.Environment.Name}.json", true, true)
+                            .AddEnvironmentVariables()
+                            .AddCommandLine(args);
+                    })
+                    .ConfigureConfiguration(param =>
+                    {
+                        if (param.Environment.IsDevelopment())
+                            param.Configuration["CacheTimeoutInMs"] = "1000";
+                    })
+                    .ConfigureLoggerFactory(param =>
+                    {
+                        param.LoggerFactory.AddNLog();
+
+                        param.LoggerFactory.ConfigureNLog(
+                            param.Environment.ContentRootFileProvider.GetFileInfo(
+                                    param.Environment.IsDevelopment()
+                                        ? "nlog.config"
+                                        : $"nlog.{param.Environment.Name}.config")
+                                .PhysicalPath);
+                    })
+                    .ConfigureServiceCollection(param =>
+                    {
+                        param.ServiceCollection
+                            .AddOptions()
+                            .Configure<ExampleHostOptions>(param.Configuration)
+                            .AddSingleton(k => k.GetRequiredService<IOptions<ExampleHostOptions>>().Value);
+                    })
+                    .UseServiceProviderBuilder(param =>
+                    {
+                        var container = new Autofac.ContainerBuilder();
+                        container.Populate(param.ServiceCollection);
+                        return new AutofacServiceProvider(container.Build());
+                    }))
+                {
+                    await hostBuilder.RunHostAsync<ExampleHost>(ct);
+                }
+
+                logger.LogInformation("Example02: Terminated");
+            }
         }
 
         private static async Task HostingUsingStartupAsync(string[] args, CancellationToken ct)
@@ -159,16 +165,19 @@ namespace SimpleSoft.Hosting.Example
 
             var logger = loggerFactory.CreateLogger<Program>();
 
-            logger.LogInformation("Example03: Hosting an application using startup class");
-
-            using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
-                .UseLoggerFactory(loggerFactory)
-                .UseStartup(new ExampleStartup(args)))
+            using (logger.BeginScope("Example:{exampleNumber}", "03"))
             {
-                await hostBuilder.RunHostAsync<ExampleHost>(ct);
-            }
+                logger.LogInformation("Hosting an application using startup class");
 
-            logger.LogInformation("Example03: Terminated");
+                using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+                    .UseLoggerFactory(loggerFactory)
+                    .UseStartup(new ExampleStartup(args)))
+                {
+                    await hostBuilder.RunHostAsync<ExampleHost>(ct);
+                }
+
+                logger.LogInformation("Terminated");
+            }
         }
     }
 }
