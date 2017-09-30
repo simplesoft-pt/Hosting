@@ -77,7 +77,14 @@ namespace SimpleSoft.Hosting
         /// <summary>
         /// The builder logger factory.
         /// </summary>
-        ILoggerFactory LoggerFactory { get; set; }
+        ILoggerFactory LoggerFactory { get; }
+
+        /// <summary>
+        /// Sets the logger factory to be used by the builder.
+        /// </summary>
+        /// <param name="loggerFactory">The factory to be used</param>
+        /// <param name="disposeFactory">Should the builder also dispose the factory when disposed?</param>
+        void SetLoggerFactory(ILoggerFactory loggerFactory, bool disposeFactory = true);
 
         /// <summary>
         /// Collection of handlers that configure the <see cref="ILoggerFactory"/>.

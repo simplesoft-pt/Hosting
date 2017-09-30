@@ -119,14 +119,15 @@ namespace SimpleSoft.Hosting
         /// <typeparam name="TBuilder">The builder type</typeparam>
         /// <param name="builder">The builder to use</param>
         /// <param name="loggerFactory">The logger factory to use</param>
+        /// <param name="disposeFactory">Should the builder also dispose the factory when disposed?</param>
         /// <returns>The builder instance</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static TBuilder UseLoggerFactory<TBuilder>(this TBuilder builder, ILoggerFactory loggerFactory)
+        public static TBuilder UseLoggerFactory<TBuilder>(this TBuilder builder, ILoggerFactory loggerFactory, bool disposeFactory = true)
             where TBuilder : IHostBuilder
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            builder.LoggerFactory = loggerFactory;
+            builder.SetLoggerFactory(loggerFactory, disposeFactory);
             return builder;
         }
 

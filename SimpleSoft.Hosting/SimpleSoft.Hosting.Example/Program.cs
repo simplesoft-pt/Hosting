@@ -45,11 +45,9 @@ namespace SimpleSoft.Hosting.Example
             {
                 logger.LogInformation("Hosting an application using only interface methods");
 
-                using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT")
+                using (var hostBuilder = new HostBuilder("ASPNETCORE_ENVIRONMENT"))
                 {
-                    LoggerFactory = loggerFactory
-                })
-                {
+                    hostBuilder.SetLoggerFactory(loggerFactory);
                     hostBuilder.AddConfigurationBuilderHandler(param =>
                     {
                         param.Builder

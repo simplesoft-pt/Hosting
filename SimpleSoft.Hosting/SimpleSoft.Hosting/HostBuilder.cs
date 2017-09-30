@@ -39,7 +39,7 @@ namespace SimpleSoft.Hosting
     public class HostBuilder : IHostBuilder
     {
         private bool _disposed;
-        private ILoggerFactory _loggerFactory;
+        private bool _disposeLoggerFactory = true;
         private readonly List<Action<IConfigurationBuilderParam>> _configurationBuilderHandlers = new List<Action<IConfigurationBuilderParam>>();
         private readonly List<Action<IConfigurationHandlerParam>> _configurationHandlers = new List<Action<IConfigurationHandlerParam>>();
         private readonly List<Action<ILoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<ILoggerFactoryHandlerParam>>();
@@ -92,8 +92,13 @@ namespace SimpleSoft.Hosting
         {
             if(_disposed) return;
 
-            if(disposing)
-                _loggerFactory?.Dispose();
+            if (disposing)
+            {
+                if (_disposeLoggerFactory)
+                {
+                    LoggerFactory?.Dispose();
+                }
+            }
 
             _configurationBuilderHandlers.Clear();
             _configurationHandlers.Clear();
@@ -101,7 +106,7 @@ namespace SimpleSoft.Hosting
             _serviceCollectionHandlers.Clear();
             _configureHandlers.Clear();
 
-            _loggerFactory = null;
+            LoggerFactory = null;
             _serviceProviderBuilder = null;
 
             _disposed = true;
@@ -147,14 +152,14 @@ namespace SimpleSoft.Hosting
         #region ILoggerFactory
 
         /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
+        public ILoggerFactory LoggerFactory { get; private set; }
+
+        /// <inheritdoc />
+        public void SetLoggerFactory(ILoggerFactory loggerFactory, bool disposeFactory = true)
         {
-            get => _loggerFactory;
-            set
-            {
-                FailIfDisposed();
-                _loggerFactory = value ?? throw new ArgumentNullException(nameof(value));
-            }
+            FailIfDisposed();
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _disposeLoggerFactory = disposeFactory;
         }
 
         /// <inheritdoc />
