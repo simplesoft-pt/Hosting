@@ -40,6 +40,7 @@ namespace SimpleSoft.Hosting
     {
         private bool _disposed;
         private bool _disposeLoggerFactory = true;
+        private ILogger<HostBuilder> _logger;
         private readonly List<Action<IConfigurationBuilderParam>> _configurationBuilderHandlers = new List<Action<IConfigurationBuilderParam>>();
         private readonly List<Action<IConfigurationHandlerParam>> _configurationHandlers = new List<Action<IConfigurationHandlerParam>>();
         private readonly List<Action<ILoggerFactoryHandlerParam>> _loggerFactoryHandlers = new List<Action<ILoggerFactoryHandlerParam>>();
@@ -55,7 +56,9 @@ namespace SimpleSoft.Hosting
         public HostBuilder(IHostingEnvironment environment)
         {
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+
             LoggerFactory = new LoggerFactory();
+            _logger = LoggerFactory.CreateLogger<HostBuilder>();
         }
 
         /// <summary>
@@ -107,6 +110,7 @@ namespace SimpleSoft.Hosting
             _configureHandlers.Clear();
 
             LoggerFactory = null;
+            _logger = null;
             _serviceProviderBuilder = null;
 
             _disposed = true;
@@ -158,8 +162,10 @@ namespace SimpleSoft.Hosting
         public void SetLoggerFactory(ILoggerFactory loggerFactory, bool disposeFactory = true)
         {
             FailIfDisposed();
+
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _disposeLoggerFactory = disposeFactory;
+            _logger = LoggerFactory.CreateLogger<HostBuilder>();
         }
 
         /// <inheritdoc />
@@ -224,34 +230,37 @@ namespace SimpleSoft.Hosting
         {
             FailIfDisposed();
 
-            var logger = LoggerFactory.CreateLogger<HostBuilder>();
+            using (_logger.BeginScope("HostType:{hostType}", typeof(THost)))
+            {
+                _logger.LogDebug(
+                    "Building run context [Environment:'{environment}' ContentRootPath:'{contentRootPath}' ApplicationName:'{applicationName}']",
+                    Environment.Name, Environment.ContentRootPath, Environment.ApplicationName);
 
-            logger.LogDebug(
-                "Building context for host '{hostTypeName}' [Environment:'{environment}' ContentRootPath:'{contentRootPath}' ApplicationName:'{applicationName}']",
-                typeof(THost).Name, Environment.Name, Environment.ContentRootPath, Environment.ApplicationName);
+                var configurationBuilder = BuildConfigurationBuilderUsingHandlers();
 
-            var configurationBuilder = BuildConfigurationBuilderUsingHandlers(logger);
+                var configurationRoot = BuildConfigurationRootUsingHandlers(configurationBuilder);
 
-            var configurationRoot = BuildConfigurationRootUsingHandlers(logger, configurationBuilder);
+                ConfigureLoggerFactoryUsingHandlers(configurationRoot);
 
-            var loggerFactory = BuildLoggerFactoryUsingHandlers(logger, configurationRoot);
+                var serviceCollection = BuildServiceCollectionUsingHandlers(configurationRoot);
+                serviceCollection.TryAddScoped<THost>();
 
-            //  getting a new logger since configurations may have changed
-            logger = loggerFactory.CreateLogger<HostBuilder>();
+                var serviceProvider = BuildAndConfigureServiceProvider(serviceCollection, configurationRoot);
 
-            var serviceCollection = BuildServiceCollectionUsingHandlers(logger, loggerFactory, configurationRoot);
-            serviceCollection.TryAddScoped<THost>();
+                var ctx = new HostRunContext<THost>(
+                    serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope());
 
-            var serviceProvider = BuildAndConfigureServiceProvider(logger, serviceCollection, loggerFactory, configurationRoot);
+                _logger.LogInformation("Built a new context to run the host [Id:{hostRunContextId}]", ctx.Id);
 
-            return new HostRunContext<THost>(serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope());
+                return ctx;
+            }
         }
 
         #region Private
 
-        private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers(ILogger logger)
+        private IConfigurationBuilder BuildConfigurationBuilderUsingHandlers()
         {
-            logger.LogDebug("Preparing configuration builder");
+            _logger.LogDebug("Preparing configuration builder");
 
             var builder = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
@@ -260,7 +269,7 @@ namespace SimpleSoft.Hosting
                     {"environment:contentRootPath", Environment.ContentRootPath}
                 });
 
-            logger.LogDebug("Running configuration builder handlers [Count: {configurationBuilderHandlersCount}]",
+            _logger.LogDebug("Running configuration builder handlers [Count: {configurationBuilderHandlersCount}]",
                 _configurationBuilderHandlers.Count);
 
             var param = new ConfigurationBuilderParam(builder, Environment);
@@ -270,13 +279,13 @@ namespace SimpleSoft.Hosting
             return param.Builder;
         }
 
-        private IConfigurationRoot BuildConfigurationRootUsingHandlers(ILogger logger, IConfigurationBuilder configurationBuilder)
+        private IConfigurationRoot BuildConfigurationRootUsingHandlers(IConfigurationBuilder configurationBuilder)
         {
-            logger.LogDebug("Building configurations root");
+            _logger.LogDebug("Building configurations root");
 
             var configurations = configurationBuilder.Build();
 
-            logger.LogDebug("Running configurations handlers [Count: {configurationHandlersCount}]",
+            _logger.LogDebug("Running configurations handlers [Count: {configurationHandlersCount}]",
                 _configurationHandlers.Count);
 
             var param = new ConfigurationHandlerParam(configurations, Environment);
@@ -286,49 +295,51 @@ namespace SimpleSoft.Hosting
             return param.Configuration;
         }
 
-        private ILoggerFactory BuildLoggerFactoryUsingHandlers(ILogger logger, IConfiguration configuration)
+        private void ConfigureLoggerFactoryUsingHandlers(IConfiguration configuration)
         {
-            logger.LogDebug("Running logger factory handlers [Count: {configurationHandlersCount}]",
+            _logger.LogDebug("Running logger factory handlers [Count: {configurationHandlersCount}]",
                 _configurationHandlers.Count);
+
+            if (_configurationHandlers.Count == 0)
+                return;
 
             var param = new LoggerFactoryHandlerParam(LoggerFactory, configuration, Environment);
             foreach (var handler in _loggerFactoryHandlers)
                 handler(param);
-
-            return param.LoggerFactory;
+            _logger.LogDebug("Finished the logger factory handler configuration");
         }
 
-        private IServiceCollection BuildServiceCollectionUsingHandlers(ILogger logger, ILoggerFactory loggerFactory, IConfigurationRoot configuration)
+        private IServiceCollection BuildServiceCollectionUsingHandlers(IConfigurationRoot configuration)
         {
-            logger.LogDebug("Configuring core services");
+            _logger.LogDebug("Configuring core services");
 
             var serviceCollection = new ServiceCollection()
-                .AddSingleton(loggerFactory)
+                .AddSingleton(LoggerFactory)
                 .AddLogging()
                 .AddSingleton(configuration)
                 .AddSingleton(Environment);
 
-            logger.LogDebug("Running service collection handlers [Count: {serviceCollectionHandlersCount}]",
+            _logger.LogDebug("Running service collection handlers [Count: {serviceCollectionHandlersCount}]",
                 _serviceCollectionHandlers.Count);
 
-            var param = new ServiceCollectionHandlerParam(serviceCollection, loggerFactory, configuration, Environment);
+            var param = new ServiceCollectionHandlerParam(serviceCollection, LoggerFactory, configuration, Environment);
             foreach (var handler in _serviceCollectionHandlers)
                 handler(param);
 
             return param.ServiceCollection;
         }
 
-        private IServiceProvider BuildAndConfigureServiceProvider(ILogger logger, IServiceCollection serviceCollection, ILoggerFactory loggerFactory, IConfiguration configuration)
+        private IServiceProvider BuildAndConfigureServiceProvider(IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            logger.LogDebug("Building service provider");
+            _logger.LogDebug("Building service provider");
 
-            var builderParam = new ServiceProviderBuilderParam(serviceCollection, loggerFactory, configuration, Environment);
+            var builderParam = new ServiceProviderBuilderParam(serviceCollection, LoggerFactory, configuration, Environment);
             var serviceProvider = ServiceProviderBuilder(builderParam);
 
-            logger.LogDebug("Running service provider handlers [Count: {configureHandlersCount}]",
+            _logger.LogDebug("Running service provider handlers [Count: {configureHandlersCount}]",
                 _configureHandlers.Count);
 
-            var param = new ConfigureHandlerParam(serviceProvider, loggerFactory, configuration, Environment);
+            var param = new ConfigureHandlerParam(serviceProvider, LoggerFactory, configuration, Environment);
             foreach (var handler in _configureHandlers)
                 handler(param);
 
