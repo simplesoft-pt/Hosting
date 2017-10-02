@@ -357,8 +357,94 @@ namespace SimpleSoft.Hosting
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            builder.RunHostAsync<THost>().ConfigureAwait(false)
+            builder.RunHostAsync<THost>(CancellationToken.None).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
+        }
+
+        #endregion
+
+        #region Run
+
+        /// <summary>
+        /// Builds and runs a host instance of the given type.
+        /// </summary>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="runHandler">The run handler</param>
+        /// <param name="ct">The cancellation</param>
+        /// <returns>Task to be awaited</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task RunAsync(
+            this IHostBuilder builder, Func<IServiceProvider, CancellationToken, Task> runHandler, CancellationToken ct = default(CancellationToken))
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (runHandler == null) throw new ArgumentNullException(nameof(runHandler));
+
+            using (var ctx = builder.BuildRunContext<HandlerHost>())
+            {
+                var logger = ctx.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<IHostBuilder>();
+                using (logger.BeginScope("HostType:'{hostTypeName}' ExecutionId:{executionId}", nameof(HandlerHost), ctx.Id))
+                {
+                    var serviceProvider = ctx.ServiceProvider;
+                    ctx.Host.Handler = async c =>
+                    {
+                        await runHandler(serviceProvider, c).ConfigureAwait(false);
+                    };
+                    await ctx.Host.RunAsync(ct).ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Builds and runs a host instance of the given type.
+        /// </summary>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="runHandler">The run handler</param>
+        /// <param name="ct">The cancellation</param>
+        /// <returns>Task to be awaited</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task RunAsync(
+            this IHostBuilder builder, Func<IServiceProvider, Task> runHandler, CancellationToken ct = default(CancellationToken))
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (runHandler == null) throw new ArgumentNullException(nameof(runHandler));
+
+            await builder.RunAsync(async (s, c) =>
+            {
+                await runHandler(s).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Builds and runs a host instance of the given type.
+        /// </summary>
+        /// <param name="builder">The builder to use</param>
+        /// <param name="runHandler">The run handler</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Run(this IHostBuilder builder, Action<IServiceProvider> runHandler)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (runHandler == null) throw new ArgumentNullException(nameof(runHandler));
+
+            builder.RunAsync((s, c) =>
+            {
+                runHandler(s);
+                return HandlerHost.CompletedTask;
+            }).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class HandlerHost : IHost
+        {
+            public static readonly Task CompletedTask = Task.FromResult(true);
+
+            public Func<CancellationToken, Task> Handler { private get; set; }
+
+            public async Task RunAsync(CancellationToken ct)
+            {
+                if (Handler != null)
+                    await Handler(ct).ConfigureAwait(false);
+            }
         }
 
         #endregion
