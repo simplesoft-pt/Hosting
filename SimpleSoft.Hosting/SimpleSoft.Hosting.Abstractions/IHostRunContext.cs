@@ -34,6 +34,11 @@ namespace SimpleSoft.Hosting
         where THost : class, IHost
     {
         /// <summary>
+        /// Unique identifier of this context
+        /// </summary>
+        Guid Id { get; }
+
+        /// <summary>
         /// The host to be run
         /// </summary>
         THost Host { get; }

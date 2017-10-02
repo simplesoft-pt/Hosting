@@ -34,7 +34,7 @@ namespace SimpleSoft.Hosting
         private bool _disposed;
         private IServiceScope _serviceScope;
         private THost _host;
-        
+
         public HostRunContext(IServiceScope serviceScope)
         {
             _serviceScope = serviceScope ?? throw new ArgumentNullException(nameof(serviceScope));
@@ -45,6 +45,8 @@ namespace SimpleSoft.Hosting
         {
             Dispose(false);
         }
+
+        public Guid Id { get; } = Guid.NewGuid();
 
         public THost Host
         {
