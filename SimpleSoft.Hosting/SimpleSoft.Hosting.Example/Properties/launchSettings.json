@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SimpleSoft.Hosting.Example": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
