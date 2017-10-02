@@ -338,7 +338,11 @@ namespace SimpleSoft.Hosting
 
             using (var ctx = builder.BuildRunContext<THost>())
             {
-                await ctx.Host.RunAsync(ct).ConfigureAwait(false);
+                var logger = ctx.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<IHostBuilder>();
+                using (logger.BeginScope("HostType:'{hostTypeName}' ExecutionId:{executionId}", typeof(THost).Name, ctx.Id))
+                {
+                    await ctx.Host.RunAsync(ct).ConfigureAwait(false);
+                }
             }
         }
 

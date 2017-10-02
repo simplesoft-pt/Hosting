@@ -226,6 +226,10 @@ namespace SimpleSoft.Hosting
 
             var logger = LoggerFactory.CreateLogger<HostBuilder>();
 
+            logger.LogDebug(
+                "Building context for host '{hostTypeName}' [Environment:'{environment}' ContentRootPath:'{contentRootPath}' ApplicationName:'{applicationName}']",
+                typeof(THost).Name, Environment.Name, Environment.ContentRootPath, Environment.ApplicationName);
+
             var configurationBuilder = BuildConfigurationBuilderUsingHandlers(logger);
 
             var configurationRoot = BuildConfigurationRootUsingHandlers(logger, configurationBuilder);
