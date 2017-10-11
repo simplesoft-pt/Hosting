@@ -366,7 +366,7 @@ namespace SimpleSoft.Hosting
         #region Run
 
         /// <summary>
-        /// Builds and runs a host instance of the given type.
+        /// Builds a host for running the given handler.
         /// </summary>
         /// <param name="builder">The builder to use</param>
         /// <param name="runHandler">The run handler</param>
