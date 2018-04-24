@@ -35,14 +35,14 @@ namespace SimpleSoft.Hosting.Example
 
         public override void ConfigureLoggerFactory(ILoggerFactoryHandlerParam param)
         {
-            param.LoggerFactory.AddNLog();
-
-            param.LoggerFactory.ConfigureNLog(
+            NLog.LogManager.LoadConfiguration(
                 param.Environment.ContentRootFileProvider.GetFileInfo(
                         param.Environment.IsDevelopment()
                             ? "nlog.config"
                             : $"nlog.{param.Environment.Name}.config")
                     .PhysicalPath);
+
+            param.LoggerFactory.AddNLog();
         }
 
         public override void ConfigureServiceCollection(IServiceCollectionHandlerParam param)
