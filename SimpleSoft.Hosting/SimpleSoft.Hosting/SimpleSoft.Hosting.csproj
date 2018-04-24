@@ -7,7 +7,7 @@
     <Description>Library to simplify the hosting of console applications by making it easier to setup dependency injection, logging and configurations.</Description>
     <Product>SimpleSoft.Hosting</Product>
     <Company>SimpleSoft.pt</Company>
-    <Copyright>Copyright © 2017 SimpleSoft.pt</Copyright>
+    <Copyright>Copyright © 2018 SimpleSoft.pt</Copyright>
     <Authors>João Simões</Authors>
   </PropertyGroup>
 
